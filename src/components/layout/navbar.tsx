@@ -110,8 +110,9 @@ export function Navbar() {
             <Button
               variant="outline"
               className="cursor-pointer transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
+              asChild
             >
-              Entrar
+              <Link href="/login">Entrar</Link>
             </Button>
 
             {/* User Dropdown Menu */}
