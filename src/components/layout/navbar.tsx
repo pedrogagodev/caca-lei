@@ -68,7 +68,7 @@ export function Navbar() {
           isScrolled ? "bg-background/95 backdrop-blur-md" : "bg-background/85 backdrop-blur-md"
         }`}
       >
-        <nav className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
+        <nav className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 lg:px-6">
           {/* Logo with luxury hover effect */}
           <Link
             href="/"
