@@ -1,0 +1,90 @@
+"use client";
+
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+
+interface ThemeSidebarProps {
+  defaultTheme?: string;
+  onThemeChange?: (theme: string) => void;
+  activeTheme?: string;
+}
+
+const themes = [
+  { id: "all", label: "Todas", count: 247 },
+  { id: "transport", label: "Transporte", count: 54 },
+  { id: "health", label: "Saúde", count: 72 },
+  { id: "education", label: "Educação", count: 48 },
+  { id: "security", label: "Segurança", count: 31 },
+  { id: "privacy", label: "Dados & Privacidade", count: 28 },
+  { id: "environment", label: "Meio Ambiente", count: 14 },
+];
+
+export function SidebarFilters({
+  defaultTheme = "all",
+  onThemeChange,
+  activeTheme: controlledTheme,
+}: ThemeSidebarProps) {
+  const [localTheme, setLocalTheme] = useState(defaultTheme);
+
+  // Use controlled or uncontrolled state
+  const activeTheme = controlledTheme || localTheme;
+
+  const handleThemeClick = (themeId: string) => {
+    if (!controlledTheme) {
+      setLocalTheme(themeId);
+    }
+    onThemeChange?.(themeId);
+  };
+
+  return (
+    <Card className="overflow-hidden p-0">
+      <nav className="flex flex-col p-2">
+        {themes.map((theme) => {
+          const isActive = activeTheme === theme.id;
+
+          return (
+            <button
+              key={theme.id}
+              type="button"
+              onClick={() => handleThemeClick(theme.id)}
+              className={`group relative flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
+                isActive
+                  ? "bg-background text-foreground shadow-sm ring-1 ring-border"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              }`}
+            >
+              {/* Linear-style left accent */}
+              {isActive && (
+                <span className="absolute left-0 top-[20%] h-[60%] w-[2px] rounded-r-sm bg-primary" />
+              )}
+
+              {/* Label */}
+              <span className="flex-1 text-left">{theme.label}</span>
+
+              {/* Count badge */}
+              <span
+                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors duration-150 ${
+                  isActive
+                    ? "bg-primary/10 text-primary"
+                    : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10 group-hover:text-foreground"
+                }`}
+              >
+                {theme.count}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <style jsx>{`
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+      `}</style>
+    </Card>
+  );
+}

@@ -9,7 +9,7 @@ export function StatusTile({ label, hint, active }: StatusTileProps) {
     <button
       className={`group relative flex w-full items-center justify-between gap-2 rounded-xl border px-3 py-3 text-left transition ${
         active
-          ? "border-primary bg-primary/10 shadow-[0_18px_45px_-30px_rgba(0,0,0,0.8)]"
+          ? "border-primary bg-primary/10"
           : "border-border bg-muted/50 hover:border-primary/40"
       }`}
     >
