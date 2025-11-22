@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   UserPlus,
   EnvelopeSimple,
@@ -19,31 +20,88 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { toast } from "sonner"
 import Logo from "@/assets/logo-lei.png";
+import { createClient } from "@/supabase/client";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
-    // Validate passwords match
     if (password !== confirmPassword) {
-      alert("As senhas não coincidem");
+      setError("As senhas não coincidem");
       return;
     }
 
-    // TODO: Implement registration logic
-    console.log("Registration attempt:", { name, email, password });
+    if (password.length < 8) {
+      setError("A senha deve ter no mínimo 8 caracteres");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const supabase = createClient();
+
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          },
+        },
+      });
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      if (data.user) {
+        if (data.user.identities && data.user.identities.length === 0) {
+          setError("Este email já está cadastrado. Por favor, faça login.");
+          setIsLoading(false);
+          return;
+        }
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (signInError) {
+          throw signInError;
+        }
+
+        toast.success("Conta criada com sucesso! Você está logado.");
+        router.push("/");
+      }
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      setError(err.message || "Erro ao criar conta. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      setError(null);
+    }
+  }, [error]);
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="mb-8 flex justify-center">
           <Link
             href="/"
@@ -62,7 +120,6 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        {/* Register Card */}
         <Card>
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Criar conta</CardTitle>
@@ -72,7 +129,6 @@ export default function RegisterPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name Field */}
               <div className="space-y-2">
                 <label
                   htmlFor="name"
@@ -98,7 +154,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Email Field */}
               <div className="space-y-2">
                 <label
                   htmlFor="email"
@@ -124,7 +179,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <label
                   htmlFor="password"
@@ -151,7 +205,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Confirm Password Field */}
               <div className="space-y-2">
                 <label
                   htmlFor="confirmPassword"
@@ -178,13 +231,13 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Submit Button */}
               <Button
                 type="submit"
                 className="w-full gap-2"
+                disabled={isLoading}
               >
                 <UserPlus size={18} weight="regular" />
-                Criar conta
+                {isLoading ? "Criando conta..." : "Criar conta"}
               </Button>
             </form>
           </CardContent>
@@ -200,7 +253,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Login Button */}
             <Button
               variant="outline"
               className="w-full"
@@ -213,7 +265,6 @@ export default function RegisterPage() {
           </CardFooter>
         </Card>
 
-        {/* Back to Home */}
         <div className="mt-6 text-center">
           <Link
             href="/"
