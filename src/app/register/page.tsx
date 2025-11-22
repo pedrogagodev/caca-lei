@@ -81,8 +81,8 @@ export default function RegisterPage() {
           throw signInError;
         }
 
-        toast.success("Conta criada com sucesso! Você está logado.");
-        router.push("/");
+        toast.success("Conta criada com sucesso! Complete seu perfil para continuar.");
+        router.push("/register/complete");
       }
     } catch (err: any) {
       console.error("Registration error:", err);
