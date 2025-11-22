@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { SignIn, EnvelopeSimple, LockKey } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,22 +15,62 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { toast } from "sonner";
 import Logo from "@/assets/logo-lei.png";
+import { createClient } from "@/supabase/client";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log("Login attempt:", { email, password });
+    setError(null);
+
+    if (password.length < 8) {
+      setError("A senha deve ter no mínimo 8 caracteres");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const supabase = createClient();
+
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        throw signInError;
+      }
+
+      if (data.user) {
+        toast.success("Login realizado com sucesso!");
+        router.push("/");
+      }
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || "Erro ao fazer login. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      setError(null);
+    }
+  }, [error]);
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="mb-8 flex justify-center">
           <Link
             href="/"
@@ -48,7 +89,6 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Login Card */}
         <Card>
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Entrar</CardTitle>
@@ -58,7 +98,6 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email Field */}
               <div className="space-y-2">
                 <label
                   htmlFor="email"
@@ -84,7 +123,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <label
                   htmlFor="password"
@@ -106,11 +144,11 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10"
                     required
+                    minLength={8}
                   />
                 </div>
               </div>
 
-              {/* Forgot Password Link */}
               <div className="flex justify-end">
                 <Link
                   href="#"
@@ -120,13 +158,13 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-              {/* Submit Button */}
               <Button
                 type="submit"
                 className="w-full gap-2"
+                disabled={isLoading}
               >
                 <SignIn size={18} weight="regular" />
-                Entrar
+                {isLoading ? "Entrando..." : "Entrar"}
               </Button>
             </form>
           </CardContent>
@@ -142,7 +180,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Create Account Button */}
             <Button
               variant="outline"
               className="w-full"
@@ -155,7 +192,6 @@ export default function LoginPage() {
           </CardFooter>
         </Card>
 
-        {/* Back to Home */}
         <div className="mt-6 text-center">
           <Link
             href="/"
