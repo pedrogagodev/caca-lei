@@ -1,13 +1,28 @@
-import { BookmarkSimple, ChatCircle } from "@phosphor-icons/react";
+﻿"use client";
+
+import {
+  ChatCircle,
+  Bus,
+  Heart,
+  RoadHorizon,
+  FirstAid,
+  Briefcase,
+  GraduationCap,
+  LockKey,
+  Circle,
+  ClockCounterClockwise,
+  CheckCircle,
+  XCircle,
+} from "@phosphor-icons/react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { LawListCard } from "@/components/ui/law-list-card";
 import { UpvoteButton } from "./upvote-button";
 
 type Law = {
   id: string;
   title: string;
-  status: "Em discussão" | "Em votação" | "Aprovada" | "Arquivada";
+  status: string;
   location: string;
   author: string;
   code: string;
@@ -22,11 +37,46 @@ type Law = {
   };
 };
 
-const statusVariant: Record<Law["status"], "default" | "secondary" | "outline" | "destructive"> = {
-  "Em discussão": "default",
-  "Em votação": "secondary",
-  Aprovada: "outline",
-  Arquivada: "destructive",
+// Topic icon mapping
+const topicIcons: Record<string, React.ComponentType<{ size?: number; weight?: "regular" | "fill" }>> = {
+  Transporte: Bus,
+  Inclusão: Heart,
+  Mobilidade: RoadHorizon,
+  Saúde: FirstAid,
+  "Serviço Público": Briefcase,
+  Educação: GraduationCap,
+  Privacidade: LockKey,
+};
+
+// Status configuration with icons
+const statusConfig: Record<
+  string,
+  {
+    variant: "default" | "secondary" | "outline" | "destructive";
+    icon: React.ComponentType<{ size?: number; weight?: "regular" | "fill" }>;
+    badgeClass: string;
+  }
+> = {
+  "Em discussao": {
+    variant: "default",
+    icon: Circle,
+    badgeClass: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-400",
+  },
+  "Em votacao": {
+    variant: "secondary",
+    icon: ClockCounterClockwise,
+    badgeClass: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400",
+  },
+  Aprovada: {
+    variant: "outline",
+    icon: CheckCircle,
+    badgeClass: "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400",
+  },
+  Arquivada: {
+    variant: "destructive",
+    icon: XCircle,
+    badgeClass: "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400",
+  },
 };
 
 interface LawCardProps {
@@ -34,57 +84,117 @@ interface LawCardProps {
 }
 
 export function LawCard({ law }: LawCardProps) {
-  const supportPercent = Number.parseInt(law.support.replace(/\D/g, ""));
+  const [isUpvoted, setIsUpvoted] = useState(false);
+  const [upvoteCount, setUpvoteCount] = useState(Number.parseInt(law.support.replace(/\D/g, "")));
+
   const engagementCount = law.engagements.split(" ")[1];
+  const normalizedStatus = law.status.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // Get status configuration
+  const status = statusConfig[normalizedStatus] ?? statusConfig["Em discussao"];
+  const StatusIcon = status.icon;
+
+  // Tag limiting: show max 2 tags
+  const visibleTopics = law.topics.slice(0, 2);
+  const remainingTopicsCount = law.topics.length - visibleTopics.length;
+
+  // Truncate description to 80 characters
+  const maxDescriptionLength = 80;
+  const isTruncated = law.summary.length > maxDescriptionLength;
+  const truncatedSummary = isTruncated
+    ? law.summary.slice(0, maxDescriptionLength).trim() + "..."
+    : law.summary;
+
+  const handleUpvote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isUpvoted) {
+      setIsUpvoted(true);
+      setUpvoteCount((prev) => prev + 1);
+    } else {
+      setIsUpvoted(false);
+      setUpvoteCount((prev) => prev - 1);
+    }
+  };
 
   return (
-    <LawListCard className="group relative flex gap-4 overflow-hidden p-4 transition hover:border-primary">
-      <div className="flex flex-col items-center gap-3">
-        <UpvoteButton count={supportPercent} active={false} />
-        <Button variant="ghost" size="sm" className="flex h-auto flex-col items-center gap-0.5 p-1">
-          <ChatCircle size={16} weight="regular" />
-          <span className="text-xs font-medium tabular-nums">{engagementCount}</span>
-        </Button>
+    <LawListCard
+      leading={undefined}
+      actions={
+        <div className="flex items-center gap-2">
+          {/* Status badge - positioned with actions */}
+          <Badge
+            variant={status.variant}
+            className={`gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium ${status.badgeClass}`}
+          >
+            <StatusIcon size={12} weight="fill" />
+            <span>{law.status}</span>
+          </Badge>
+          <UpvoteButton count={upvoteCount} active={isUpvoted} onClick={handleUpvote} />
+        </div>
+      }
+    >
+      {/* Block 1: Title (Maximum weight) */}
+      <div>
+        <h3 className="text-xl font-bold leading-tight tracking-tight transition-colors duration-200 group-hover:text-primary">
+          {law.title}
+        </h3>
       </div>
 
-      <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-gradient-to-br from-primary/10 to-secondary/10">
-        <span className="text-2xl font-bold text-primary">{law.code.split(" ")[0]}</span>
-      </div>
-
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={statusVariant[law.status]}>{law.status}</Badge>
-          {law.topics.slice(0, 3).map((topic) => (
-            <Badge key={topic} variant="secondary">
-              {topic}
+      {/* Block 2: Topic Tags (with icons) */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        {visibleTopics.map((topic) => {
+          const TopicIcon = topicIcons[topic];
+          return (
+            <Badge
+              key={topic}
+              variant="secondary"
+              className="gap-1 rounded-full border border-foreground/10 bg-muted/50 px-2.5 py-0.5 text-[10px] font-normal text-muted-foreground"
+            >
+              {TopicIcon && <TopicIcon size={11} weight="regular" />}
+              <span>{topic}</span>
             </Badge>
-          ))}
-          {law.manager && <Badge variant="outline">Gestor</Badge>}
-        </div>
-
-        <div>
-          <h3 className="text-lg font-semibold leading-tight group-hover:text-primary">{law.title}</h3>
-          <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{law.summary}</p>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{law.code}</span>
-          <span>·</span>
-          <span>{law.location}</span>
-          <span>·</span>
-          <span>{law.author}</span>
-        </div>
+          );
+        })}
+        {remainingTopicsCount > 0 && (
+          <Badge
+            variant="outline"
+            className="rounded-full border-foreground/10 px-2 py-0.5 text-[10px] font-normal text-muted-foreground"
+          >
+            +{remainingTopicsCount}
+          </Badge>
+        )}
       </div>
 
-      <div className="flex flex-shrink-0 items-start gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="opacity-0 transition group-hover:opacity-100"
-          aria-label="Salvar para depois"
-        >
-          <BookmarkSimple size={20} weight="regular" />
-        </Button>
+      {/* Block 3: Description (Light weight, truncated) */}
+      <div>
+        <p className="text-sm font-normal leading-relaxed text-muted-foreground">
+          {truncatedSummary}
+          {isTruncated && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Aqui você pode adicionar lógica para expandir a descrição ou abrir modal
+              }}
+              className="ml-1 text-sm font-medium text-primary transition-colors duration-150 hover:text-primary/80"
+            >
+              Leia mais
+            </button>
+          )}
+        </p>
+      </div>
+
+      {/* Block 4: Metrics (Compact) */}
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1 tabular-nums">
+          <ChatCircle size={14} weight="regular" />
+          <span className="font-medium text-foreground">{engagementCount}</span>
+        </span>
+        <span className="text-muted-foreground/50">·</span>
+        <span className="text-muted-foreground/50">{law.location}</span>
       </div>
     </LawListCard>
   );
