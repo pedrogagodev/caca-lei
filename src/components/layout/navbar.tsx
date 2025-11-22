@@ -63,8 +63,14 @@ export function Navbar() {
     setIsSigningOut(true);
     try {
       await signOut();
+      // Note: signOut() redirects, so code below won't execute on success
       toast.success("Você saiu da sua conta");
     } catch (error) {
+      // Only catch actual errors, not NEXT_REDIRECT
+      if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+        // This is expected behavior - redirect is working
+        return;
+      }
       console.error("Error signing out:", error);
       toast.error("Erro ao sair");
       setIsSigningOut(false);

@@ -52,17 +52,12 @@ export async function getProfile() {
 export async function signOut() {
   const supabase = await createClient();
 
-  try {
-    const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
 
-    if (error) {
-      console.error("Error signing out:", error);
-      return { success: false, error: error.message };
-    }
-
-    redirect("/");
-  } catch (error) {
-    console.error("Error in signOut:", error);
-    return { success: false, error: "Failed to sign out" };
+  if (error) {
+    console.error("Error signing out:", error);
+    return { success: false, error: error.message };
   }
+
+  redirect("/");
 }
