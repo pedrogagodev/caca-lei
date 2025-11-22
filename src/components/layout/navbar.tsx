@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   MagnifyingGlass,
   List,
@@ -31,6 +31,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SearchCommandPalette } from "@/components/layout/search-command-palette";
 import Logo from "@/assets/logo-lei.png";
+import { useAuth } from "@/contexts/auth-context";
+import { signOut } from "@/app/actions/auth";
+import { toast } from "sonner";
 
 const navLinks = [
   { href: "/", label: "Início" },
@@ -40,9 +43,12 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   // Add background blur on scroll for depth
   useEffect(() => {
@@ -52,6 +58,34 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOut();
+      // Note: signOut() redirects, so code below won't execute on success
+      toast.success("Você saiu da sua conta");
+    } catch (error) {
+      // Only catch actual errors, not NEXT_REDIRECT
+      if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+        // This is expected behavior - redirect is working
+        return;
+      }
+      console.error("Error signing out:", error);
+      toast.error("Erro ao sair");
+      setIsSigningOut(false);
+    }
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user?.user_metadata?.full_name) return "U";
+    const names = user.user_metadata.full_name.split(" ");
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return names[0][0].toUpperCase();
+  };
 
   return (
     <>
@@ -107,48 +141,74 @@ export function Navbar() {
 
           {/* Desktop: User Actions */}
           <div className="ml-auto hidden items-center gap-2 md:flex">
-            <Button
-              variant="outline"
-              className="cursor-pointer transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
-            >
-              Entrar
-            </Button>
-
-            {/* User Dropdown Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="group relative cursor-pointer rounded-full transition-all duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            {!loading && !user && (
+              <>
+                <Button
+                  variant="outline"
+                  className="cursor-pointer transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
+                  asChild
                 >
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback
-                      className="bg-primary/40 transition-colors duration-200 group-hover:bg-primary/60"
-                      aria-label="Perfil do usuário"
-                    >
-                      <User size={20} weight="regular" />
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer gap-2">
-                  <User size={16} weight="regular" />
-                  Perfil
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer gap-2">
-                  <Gear size={16} weight="regular" />
-                  Configurações
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer gap-2 text-destructive focus:text-destructive">
-                  <SignOut size={16} weight="regular" />
-                  Sair
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <Link href="/login">Entrar</Link>
+                </Button>
+                <Button
+                  variant="default"
+                  className="cursor-pointer transition-all duration-200"
+                  asChild
+                >
+                  <Link href="/register">Criar conta</Link>
+                </Button>
+              </>
+            )}
+
+            {!loading && user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="group relative cursor-pointer rounded-full transition-all duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback
+                        className="bg-primary/40 transition-colors duration-200 group-hover:bg-primary/60"
+                        aria-label="Perfil do usuário"
+                      >
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {user.user_metadata?.full_name || "Usuário"}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer gap-2">
+                    <User size={16} weight="regular" />
+                    Perfil
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer gap-2">
+                    <Gear size={16} weight="regular" />
+                    Configurações
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer gap-2 text-destructive focus:text-destructive"
+                    onClick={handleSignOut}
+                    disabled={isSigningOut}
+                  >
+                    <SignOut size={16} weight="regular" />
+                    {isSigningOut ? "Saindo..." : "Sair"}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           {/* Mobile: Hamburger Menu */}
@@ -209,27 +269,64 @@ export function Navbar() {
 
               {/* Mobile: User Actions */}
               <div className="mt-6 flex flex-col gap-3 border-t pt-6">
-                <Button
-                  variant="outline"
-                  className="w-full cursor-pointer justify-start gap-2 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
-                >
-                  <User size={16} weight="regular" />
-                  Perfil
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full cursor-pointer justify-start gap-2 transition-all duration-200 hover:bg-muted"
-                >
-                  <Gear size={16} weight="regular" />
-                  Configurações
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full cursor-pointer justify-start gap-2 transition-all duration-200 hover:bg-destructive hover:text-destructive-foreground"
-                >
-                  <SignOut size={16} weight="regular" />
-                  Sair
-                </Button>
+                {!loading && !user && (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full cursor-pointer justify-start"
+                      asChild
+                    >
+                      <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                        Entrar
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="default"
+                      className="w-full cursor-pointer justify-start"
+                      asChild
+                    >
+                      <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                        Criar conta
+                      </Link>
+                    </Button>
+                  </>
+                )}
+
+                {!loading && user && (
+                  <>
+                    <div className="mb-2 px-2">
+                      <p className="text-sm font-medium">
+                        {user.user_metadata?.full_name || "Usuário"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="w-full cursor-pointer justify-start gap-2 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
+                    >
+                      <User size={16} weight="regular" />
+                      Perfil
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full cursor-pointer justify-start gap-2 transition-all duration-200 hover:bg-muted"
+                    >
+                      <Gear size={16} weight="regular" />
+                      Configurações
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full cursor-pointer justify-start gap-2 transition-all duration-200 hover:bg-destructive hover:text-destructive-foreground"
+                      onClick={handleSignOut}
+                      disabled={isSigningOut}
+                    >
+                      <SignOut size={16} weight="regular" />
+                      {isSigningOut ? "Saindo..." : "Sair"}
+                    </Button>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>
