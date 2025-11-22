@@ -292,7 +292,7 @@ function SkeletonCard() {
 export default function Home() {
   return (
     <div className="relative min-h-screen">
-      <div className="relative mx-auto grid max-w-6xl gap-6 px-4 py-6 sm:grid-cols-[240px_1fr]">
+      <div className="relative mx-auto grid max-w-6xl gap-6 px-4 py-6 sm:grid-cols-[240px_1fr] lg:px-6">
         <aside className="hidden gap-6 sm:flex sm:flex-col">
           <SidebarFilters
             defaultTheme="all"

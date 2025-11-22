@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ShareFat, BookmarkSimple, FileText } from "@phosphor-icons/react";
+import { ShareFat, FileText } from "@phosphor-icons/react";
 
 export function QuickActions() {
   const handleShare = async () => {
@@ -19,11 +19,6 @@ export function QuickActions() {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
     }
-  };
-
-  const handleSave = () => {
-    // TODO: Implement save/bookmark functionality
-    console.log("Save clicked");
   };
 
   const handleViewText = () => {
@@ -47,14 +42,6 @@ export function QuickActions() {
       >
         <ShareFat className="mr-2 h-4 w-4 transition-transform duration-200 hover:rotate-3" weight="duotone" />
         Compartilhar
-      </Button>
-      <Button
-        variant="outline"
-        onClick={handleSave}
-        className="transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-      >
-        <BookmarkSimple className="mr-2 h-4 w-4 transition-all duration-200 hover:scale-105" weight="duotone" />
-        Salvar
       </Button>
     </div>
   );
