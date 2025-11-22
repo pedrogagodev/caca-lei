@@ -1,62 +1,193 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  ThumbsUp,
+  ThumbsDown,
+  Question,
+  Lightning,
+} from "@phosphor-icons/react";
+import type { Icon } from "@phosphor-icons/react";
 
 type ReactionType = "apoio" | "nao-apoio" | "nao-entendi" | "impacta" | null;
 
-const reactions = [
-  { id: "apoio" as const, label: "❤️ Apoio", activeClass: "border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-300" },
-  { id: "nao-apoio" as const, label: "💢 Não apoio", activeClass: "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300" },
-  { id: "nao-entendi" as const, label: "🤔 Não entendi", activeClass: "border-yellow-500/50 bg-yellow-500/10 text-yellow-700 dark:text-yellow-300" },
-  { id: "impacta" as const, label: "⚠️ Impacta minha vida", activeClass: "border-orange-500/50 bg-orange-500/10 text-orange-700 dark:text-orange-300" },
+interface Reaction {
+  id: ReactionType;
+  label: string;
+  icon: Icon;
+  count: number;
+}
+
+interface ReactionButtonsProps {
+  initialCounts?: {
+    apoio: number;
+    "nao-apoio": number;
+    "nao-entendi": number;
+    impacta: number;
+  };
+}
+
+// Reaction configuration with Phosphor icons
+const defaultReactions: Omit<Reaction, "count">[] = [
+  {
+    id: "apoio" as const,
+    label: "Apoio",
+    icon: ThumbsUp,
+  },
+  {
+    id: "nao-apoio" as const,
+    label: "Não apoio",
+    icon: ThumbsDown,
+  },
+  {
+    id: "nao-entendi" as const,
+    label: "Não entendi",
+    icon: Question,
+  },
+  {
+    id: "impacta" as const,
+    label: "Me impacta",
+    icon: Lightning,
+  },
 ];
 
-export function ReactionButtons() {
+// Color styles per reaction type (muted, accessible palette)
+const reactionStyles = {
+  apoio: {
+    border: "border-emerald-200 dark:border-emerald-800/50",
+    bg: "bg-emerald-50 dark:bg-emerald-950/30",
+    text: "text-emerald-700 dark:text-emerald-400",
+    icon: "text-emerald-600 dark:text-emerald-500",
+  },
+  "nao-apoio": {
+    border: "border-rose-200 dark:border-rose-800/50",
+    bg: "bg-rose-50 dark:bg-rose-950/30",
+    text: "text-rose-700 dark:text-rose-400",
+    icon: "text-rose-600 dark:text-rose-500",
+  },
+  "nao-entendi": {
+    border: "border-amber-200 dark:border-amber-800/50",
+    bg: "bg-amber-50 dark:bg-amber-950/30",
+    text: "text-amber-700 dark:text-amber-400",
+    icon: "text-amber-600 dark:text-amber-500",
+  },
+  impacta: {
+    border: "border-violet-200 dark:border-violet-800/50",
+    bg: "bg-violet-50 dark:bg-violet-950/30",
+    text: "text-violet-700 dark:text-violet-400",
+    icon: "text-violet-600 dark:text-violet-500",
+  },
+} as const;
+
+export function ReactionButtons({ initialCounts }: ReactionButtonsProps = {}) {
   const [selectedReaction, setSelectedReaction] = useState<ReactionType>(null);
+
+  const reactions: Reaction[] = defaultReactions.map((reaction) => ({
+    ...reaction,
+    count: reaction.id ? (initialCounts?.[reaction.id] ?? 0) : 0,
+  }));
 
   const handleReactionClick = (reactionId: ReactionType) => {
     setSelectedReaction(selectedReaction === reactionId ? null : reactionId);
   };
 
   return (
-    <Card className="px-4 py-4 md:px-5 md:py-5">
-      <div className="mb-4">
-        <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">
-          Sua opinião
+    <section className="space-y-3" aria-label="Sua opinião sobre este projeto">
+      {/* Header */}
+      <div>
+        <h3 className="text-sm font-medium text-foreground">Sua opinião</h3>
+        <p className="text-xs text-muted-foreground">
+          Como esta lei te afeta?
         </p>
-        <h2 className="text-xl font-semibold">Como isso te afeta?</h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      {/* Reaction Buttons Grid */}
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
         {reactions.map((reaction) => {
           const isActive = selectedReaction === reaction.id;
+          const displayCount = reaction.count + (isActive ? 1 : 0);
+          const ReactionIcon = reaction.icon;
+          const styles = reactionStyles[reaction.id as keyof typeof reactionStyles];
+
           return (
-            <Button
+            <button
               key={reaction.id}
-              variant="outline"
-              size="lg"
+              type="button"
               onClick={() => handleReactionClick(reaction.id)}
+              aria-pressed={isActive}
+              aria-label={`${reaction.label}${displayCount > 0 ? ` (${displayCount} ${displayCount === 1 ? "pessoa" : "pessoas"})` : ""}`}
               className={cn(
-                "h-auto min-h-[44px] flex-col gap-1 px-3 py-3 text-sm font-medium transition-all duration-200",
-                "hover:scale-[1.02] active:scale-[0.98]",
-                isActive && reaction.activeClass
+                // Base structure
+                "relative flex flex-col items-center justify-center gap-1.5 px-3 py-3",
+                "rounded-lg border bg-background",
+
+                // Typography
+                "text-sm font-medium",
+
+                // Default state (unselected)
+                "border-foreground/10 text-muted-foreground",
+
+                // Interactions
+                "transition-all duration-200 ease-out",
+                "hover:scale-[1.02] hover:border-foreground/20 hover:bg-muted/30",
+                "active:scale-[0.98]",
+
+                // Focus (keyboard accessibility)
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+
+                // Touch targets
+                "min-h-[44px] touch-action-manipulation",
+
+                // Active state (selected)
+                isActive && styles.border,
+                isActive && styles.bg,
+                isActive && styles.text
               )}
             >
-              <span className="text-base md:text-lg">{reaction.label.split(" ")[0]}</span>
-              <span className="text-xs md:text-sm">{reaction.label.split(" ").slice(1).join(" ")}</span>
-            </Button>
+              {/* Icon */}
+              <ReactionIcon
+                size={20}
+                weight={isActive ? "fill" : "regular"}
+                className={cn(
+                  "transition-colors duration-200",
+                  isActive ? styles.icon : "text-muted-foreground"
+                )}
+                aria-hidden="true"
+              />
+
+              {/* Label */}
+              <span className="text-xs">{reaction.label}</span>
+
+              {/* Count Badge */}
+              {displayCount > 0 && (
+                <span
+                  className={cn(
+                    "tabular-nums text-[10px] font-semibold",
+                    isActive ? styles.text : "text-muted-foreground/70"
+                  )}
+                >
+                  {displayCount}
+                </span>
+              )}
+
+              {/* Screen reader feedback */}
+              {isActive && <span className="sr-only">Selecionado</span>}
+            </button>
           );
         })}
       </div>
 
+      {/* Success Message */}
       {selectedReaction && (
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Sua reação foi registrada! Obrigado por participar.
-        </p>
+        <div
+          role="status"
+          aria-live="polite"
+          className="text-center text-sm text-muted-foreground"
+        >
+          Sua opinião foi registrada. Obrigado por participar!
+        </div>
       )}
-    </Card>
+    </section>
   );
 }
