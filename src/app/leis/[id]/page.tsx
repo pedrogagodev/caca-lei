@@ -20,7 +20,7 @@ const keyPoints = [
   "Tarifa zero aos fins de semana em 42 linhas troncais",
   "Programa piloto de 12 meses com avaliação trimestral",
   "Investimento de R$ 2,5 milhões/mês",
-  "Prioridade para periferias e regiões com menor acesso"
+  "Prioridade para periferias e regiões com menor acesso",
 ];
 
 const details = {
@@ -31,7 +31,7 @@ const details = {
   whoIsImpacted:
     "Aproximadamente 450 mil pessoas serão beneficiadas, principalmente famílias de baixa renda que atualmente limitam deslocamentos aos fins de semana. Comerciantes locais também podem se beneficiar do aumento de circulação.",
   nextSteps:
-    "Atualmente em discussão na Comissão de Transportes. Audiências públicas previstas para fevereiro de 2025, seguidas de votação. Se aprovado, implementação em abril de 2025."
+    "Atualmente em discussão na Comissão de Transportes. Audiências públicas previstas para fevereiro de 2025, seguidas de votação. Se aprovado, implementação em abril de 2025.",
 };
 
 // Engagement metrics
@@ -93,8 +93,7 @@ const comments = [
         id: "1-1",
         author: {
           name: "Maria Santos",
-          avatar:
-            "https://api.dicebear.com/7.x/avataaars/svg?seed=MariaSantos",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=MariaSantos",
         },
         text: "Concordo completamente! Meus filhos vão poder visitar a avó com mais frequência.",
         timestamp: "2025-01-20T15:00:00Z",
@@ -140,8 +139,7 @@ const comments = [
     id: "3",
     author: {
       name: "Ana Rodrigues",
-      avatar:
-        "https://api.dicebear.com/7.x/avataaars/svg?seed=AnaRodrigues",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=AnaRodrigues",
     },
     text: "Seria possível incluir as linhas que vão para a Zona Leste também? Muitas famílias de lá precisam desse benefício.",
     timestamp: "2025-01-22T11:00:00Z",
@@ -183,7 +181,8 @@ const comments = [
 ];
 
 // Temporary video URL - replace with actual video source
-const videoSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4";
+const videoSrc =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4";
 
 export default function LawDetailPage() {
   return (

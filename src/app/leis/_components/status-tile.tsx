@@ -19,7 +19,9 @@ export function StatusTile({ label, hint, active }: StatusTileProps) {
       </div>
       <span
         className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
-          active ? "bg-primary text-primary-foreground" : "border border-border bg-background text-muted-foreground"
+          active
+            ? "bg-primary text-primary-foreground"
+            : "border border-border bg-background text-muted-foreground"
         }`}
       >
         {active ? "Ativo" : "Ativar"}

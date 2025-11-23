@@ -11,7 +11,11 @@ interface LawSummaryCardProps {
   };
 }
 
-export function LawSummaryCard({ summary, keyPoints, details }: LawSummaryCardProps) {
+export function LawSummaryCard({
+  summary,
+  keyPoints,
+  details,
+}: LawSummaryCardProps) {
   return (
     <div className="space-y-4">
       <div>

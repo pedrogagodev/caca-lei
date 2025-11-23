@@ -5,18 +5,20 @@ export async function middleware(request: NextRequest) {
   const { supabase, response } = createClient(request);
 
   // Refresh session if expired - required for Server Components
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Protected routes that require authentication
   const protectedRoutes = ["/register/complete"];
-  const isProtectedRoute = protectedRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route),
   );
 
   // Auth routes that should redirect if already logged in
   const authRoutes = ["/login", "/register"];
-  const isAuthRoute = authRoutes.some(route =>
-    request.nextUrl.pathname === route
+  const isAuthRoute = authRoutes.some(
+    (route) => request.nextUrl.pathname === route,
   );
 
   // If accessing protected route without authentication, redirect to login

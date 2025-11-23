@@ -92,7 +92,7 @@ export function SearchCommandPalette({
       setOpen(false);
       callback();
     },
-    [setOpen]
+    [setOpen],
   );
 
   const filteredLaws = mockLaws.filter(
@@ -100,7 +100,7 @@ export function SearchCommandPalette({
       search === "" ||
       law.title.toLowerCase().includes(search.toLowerCase()) ||
       law.number.toLowerCase().includes(search.toLowerCase()) ||
-      law.category.toLowerCase().includes(search.toLowerCase())
+      law.category.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -164,7 +164,7 @@ export function SearchCommandPalette({
                     }
                     style={{
                       animationDelay: `${index * 30}ms`,
-                      animationFillMode: 'backwards'
+                      animationFillMode: "backwards",
                     }}
                     className="group cursor-pointer gap-2.5 rounded-lg px-3 py-2.5 transition-all duration-200 data-[selected=true]:bg-accent/60 hover:bg-accent/40 animate-in fade-in slide-in-from-bottom-1"
                   >
@@ -202,7 +202,7 @@ export function SearchCommandPalette({
                     }
                     style={{
                       animationDelay: `${index * 30}ms`,
-                      animationFillMode: 'backwards'
+                      animationFillMode: "backwards",
                     }}
                     className="group cursor-pointer gap-2.5 rounded-lg px-3 py-2.5 transition-all duration-200 data-[selected=true]:bg-accent/60 hover:bg-accent/40 animate-in fade-in slide-in-from-bottom-1"
                   >
@@ -239,7 +239,7 @@ export function SearchCommandPalette({
                   }
                   style={{
                     animationDelay: `${index * 30}ms`,
-                    animationFillMode: 'backwards'
+                    animationFillMode: "backwards",
                   }}
                   className="group cursor-pointer gap-3 rounded-lg px-3 py-3 transition-all duration-200 data-[selected=true]:bg-accent/60 hover:bg-accent/40 animate-in fade-in slide-in-from-bottom-1"
                 >

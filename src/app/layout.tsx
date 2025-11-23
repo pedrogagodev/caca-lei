@@ -18,7 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CaçaLei - Descubra, compare e reaja às leis da sua cidade",
-  description: "Plataforma de engajamento cidadão com leis municipais. Vídeos de 60s, métricas claras e feedback direto.",
+  description:
+    "Plataforma de engajamento cidadão com leis municipais. Vídeos de 60s, métricas claras e feedback direto.",
 };
 
 export default function RootLayout({
@@ -34,9 +35,7 @@ export default function RootLayout({
         <NuqsAdapter>
           <AuthProvider>
             <Navbar />
-            <main id="main-content">
-              {children}
-            </main>
+            <main id="main-content">{children}</main>
             <Toaster />
           </AuthProvider>
         </NuqsAdapter>

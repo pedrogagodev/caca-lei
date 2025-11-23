@@ -44,7 +44,7 @@ export function ProgressTimeline({ stages }: ProgressTimelineProps) {
                     item.status === "current" &&
                       "border-primary bg-primary/10 ring-4 ring-primary/20",
                     item.status === "pending" &&
-                      "border-muted-foreground/30 bg-background"
+                      "border-muted-foreground/30 bg-background",
                   )}
                 >
                   {item.status === "completed" && (
@@ -54,10 +54,7 @@ export function ProgressTimeline({ stages }: ProgressTimelineProps) {
                     />
                   )}
                   {item.status === "current" && (
-                    <Clock
-                      className="h-5 w-5 text-primary"
-                      weight="duotone"
-                    />
+                    <Clock className="h-5 w-5 text-primary" weight="duotone" />
                   )}
                   {item.status === "pending" && (
                     <Circle
@@ -74,7 +71,7 @@ export function ProgressTimeline({ stages }: ProgressTimelineProps) {
                       "mt-1 h-full w-0.5 flex-1 transition-colors duration-200",
                       item.status === "completed"
                         ? "bg-green-500/30"
-                        : "bg-border"
+                        : "bg-border",
                     )}
                     style={{ minHeight: "24px" }}
                   />
@@ -89,7 +86,7 @@ export function ProgressTimeline({ stages }: ProgressTimelineProps) {
                       "font-semibold transition-colors duration-200",
                       item.status === "completed" && "text-foreground",
                       item.status === "current" && "text-primary",
-                      item.status === "pending" && "text-muted-foreground"
+                      item.status === "pending" && "text-muted-foreground",
                     )}
                   >
                     {item.stage}

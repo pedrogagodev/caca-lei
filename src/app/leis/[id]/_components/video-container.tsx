@@ -15,13 +15,11 @@ export function VideoContainer({ children, className }: VideoContainerProps) {
         "w-full",
         // Desktop: Constrained width for better viewing
         "lg:w-full lg:max-w-[600px] lg:mx-auto",
-        className
+        className,
       )}
     >
       {/* Video + Overlay Container */}
-      <div className="relative w-full">
-        {children}
-      </div>
+      <div className="relative w-full">{children}</div>
     </div>
   );
 }

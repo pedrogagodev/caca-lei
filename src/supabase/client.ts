@@ -3,8 +3,4 @@ import { getSupabaseEnv } from "@/env";
 
 const { url: supabaseUrl, anonKey: supabaseKey } = getSupabaseEnv();
 
-export const createClient = () =>
-  createBrowserClient(
-    supabaseUrl,
-    supabaseKey,
-  );
+export const createClient = () => createBrowserClient(supabaseUrl, supabaseKey);

@@ -29,7 +29,7 @@ export function useVideoPiP() {
         root: null, // viewport
         rootMargin: "-100px 0px 0px 0px", // Trigger 100px before fully leaving
         threshold: 0, // Trigger as soon as it starts leaving
-      }
+      },
     );
 
     observer.observe(videoSection);

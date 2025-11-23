@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  UserPlus,
-  EnvelopeSimple,
-  LockKey,
-  User,
-} from "@phosphor-icons/react";
+import { UserPlus, EnvelopeSimple, LockKey, User } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,7 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import Logo from "@/assets/logo-lei.png";
 import { createClient } from "@/supabase/client";
 
@@ -81,7 +76,9 @@ export default function RegisterPage() {
           throw signInError;
         }
 
-        toast.success("Conta criada com sucesso! Complete seu perfil para continuar.");
+        toast.success(
+          "Conta criada com sucesso! Complete seu perfil para continuar.",
+        );
         router.push("/register/complete");
       }
     } catch (err: any) {
@@ -253,14 +250,8 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              className="w-full"
-              asChild
-            >
-              <Link href="/login">
-                Entrar
-              </Link>
+            <Button variant="outline" className="w-full" asChild>
+              <Link href="/login">Entrar</Link>
             </Button>
           </CardFooter>
         </Card>

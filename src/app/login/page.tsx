@@ -40,10 +40,11 @@ export default function LoginPage() {
     try {
       const supabase = createClient();
 
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
       if (signInError) {
         throw signInError;
@@ -92,9 +93,7 @@ export default function LoginPage() {
         <Card>
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Entrar</CardTitle>
-            <CardDescription>
-              Acesse sua conta para continuar
-            </CardDescription>
+            <CardDescription>Acesse sua conta para continuar</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -180,14 +179,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              className="w-full"
-              asChild
-            >
-              <Link href="/register">
-                Criar conta
-              </Link>
+            <Button variant="outline" className="w-full" asChild>
+              <Link href="/register">Criar conta</Link>
             </Button>
           </CardFooter>
         </Card>
