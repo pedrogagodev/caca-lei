@@ -335,27 +335,6 @@ export function Navbar() {
 
       {/* Command Palette for Search */}
       <SearchCommandPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
-
-      <style jsx>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
-      `}</style>
     </>
   );
 }
