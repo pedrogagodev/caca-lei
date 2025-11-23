@@ -11,14 +11,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { ThumbsUp, ChatCircle, CircleNotch } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
+import { createComment, createCommentReply } from "@/app/actions/comments";
 import {
-  createComment,
-  createCommentReply,
   upvoteComment,
   removeCommentUpvote,
   upvoteCommentReply,
   removeCommentReplyUpvote,
-} from "@/app/actions/bills";
+} from "@/app/actions/comment-upvotes";
 import { toast } from "sonner";
 
 interface CommentReply {
