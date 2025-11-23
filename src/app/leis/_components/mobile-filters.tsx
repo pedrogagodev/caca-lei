@@ -54,10 +54,10 @@ export function MobileFilters({
               <span className="flex items-center gap-2">
                 {theme.label}
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors duration-150 ${
+                  className={`rounded-full border px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors duration-150 ${
                     isActive
-                      ? "bg-primary/20 text-primary"
-                      : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10"
+                      ? "border-primary/30 text-primary"
+                      : "border-border/50 text-muted-foreground group-hover:border-foreground/30"
                   }`}
                 >
                   {theme.count}

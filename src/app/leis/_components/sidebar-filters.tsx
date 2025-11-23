@@ -63,10 +63,10 @@ export function SidebarFilters({
 
               {/* Count badge */}
               <span
-                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors duration-150 ${
+                className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors duration-150 ${
                   isActive
-                    ? "bg-primary/10 text-primary"
-                    : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10 group-hover:text-foreground"
+                    ? "border-primary/30 text-primary"
+                    : "border-border/50 text-muted-foreground group-hover:border-foreground/30 group-hover:text-foreground"
                 }`}
               >
                 {theme.count}

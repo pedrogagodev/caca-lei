@@ -15,9 +15,14 @@ import {
   Circle,
   ClockCounterClockwise,
   CheckCircle,
-  XCircle
+  XCircle,
+  Leaf,
+  Eye,
+  Recycle,
+  Buildings
 } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useQueryState } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LawListCard } from "@/components/ui/law-list-card";
@@ -91,6 +96,188 @@ const laws: Law[] = [
     support: "👍 81% apoio",
     videoLabel: "▶ Ver vídeo de 60s",
   },
+  {
+    id: "pl-234-2025",
+    title: "Ciclovias em Áreas Residenciais",
+    status: "Em discussão",
+    location: "Rio de Janeiro",
+    author: "Ver. Carlos Silva",
+    code: "PL 234/2025",
+    summary:
+      "Amplia rede de ciclovias conectando bairros residenciais a estações de metrô e BRT, com sinalização adequada e bicicletários.",
+    topics: ["Transporte", "Mobilidade"],
+    engagements: "🔥 856 engajamentos",
+    support: "👍 68% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-567-2024",
+    title: "Telemedicina no SUS",
+    status: "Aprovada",
+    location: "Brasília",
+    author: "Sen. Maria Santos",
+    code: "PL 567/2024",
+    summary:
+      "Regulamenta atendimento por telemedicina na rede pública, incluindo consultas, diagnósticos e prescrições remotas.",
+    topics: ["Saúde", "Tecnologia"],
+    engagements: "🔥 1.8k engajamentos",
+    support: "👍 76% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-789-2024",
+    title: "Educação Digital nas Escolas Públicas",
+    status: "Em votação",
+    location: "São Paulo",
+    author: "Dep. João Oliveira",
+    code: "PL 789/2024",
+    summary:
+      "Inclui programação e pensamento computacional no currículo obrigatório do ensino fundamental, com capacitação de professores.",
+    topics: ["Educação", "Tecnologia"],
+    engagements: "🔥 1.5k engajamentos",
+    support: "👍 79% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-321-2023",
+    title: "Câmeras em Viaturas Policiais",
+    status: "Aprovada",
+    location: "Belo Horizonte",
+    author: "Ver. Patricia Lima",
+    code: "PL 321/2023",
+    summary:
+      "Torna obrigatório uso de câmeras corporais e dashcams em todas as viaturas da Polícia Militar e Guarda Municipal.",
+    topics: ["Segurança", "Transparência"],
+    engagements: "🔥 2.1k engajamentos",
+    support: "👍 84% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-456-2024",
+    title: "LGPD Municipal para Serviços Digitais",
+    status: "Em discussão",
+    location: "Porto Alegre",
+    author: "Ver. Rafael Costa",
+    code: "PL 456/2024",
+    summary:
+      "Estabelece diretrizes municipais de proteção de dados pessoais em aplicativos e portais da prefeitura, com auditorias periódicas.",
+    topics: ["Privacidade", "Tecnologia"],
+    engagements: "🔥 743 engajamentos",
+    support: "👍 71% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-654-2023",
+    title: "Preservação de Áreas Verdes Urbanas",
+    status: "Aprovada",
+    location: "Curitiba",
+    author: "Ver. Ana Verde",
+    code: "PL 654/2023",
+    summary:
+      "Cria programa de mapeamento e proteção de áreas verdes urbanas, proibindo construções em raio de 100m de nascentes.",
+    topics: ["Meio Ambiente", "Urbanismo"],
+    engagements: "🔥 1.3k engajamentos",
+    support: "👍 82% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-892-2025",
+    title: "Coleta Seletiva Obrigatória em Condomínios",
+    status: "Em votação",
+    location: "Salvador",
+    author: "Ver. Marcos Dias",
+    code: "PL 892/2025",
+    summary:
+      "Determina instalação de pontos de coleta seletiva em todos os condomínios residenciais e comerciais com mais de 10 unidades.",
+    topics: ["Meio Ambiente", "Sustentabilidade"],
+    engagements: "🔥 621 engajamentos",
+    support: "👍 65% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-147-2024",
+    title: "Bolsa Escola para Famílias de Baixa Renda",
+    status: "Em discussão",
+    location: "Fortaleza",
+    author: "Ver. Lucia Mendes",
+    code: "PL 147/2024",
+    summary:
+      "Institui auxílio financeiro mensal para famílias com renda per capita inferior a meio salário mínimo que mantêm filhos na escola.",
+    topics: ["Educação", "Inclusão"],
+    engagements: "🔥 1.9k engajamentos",
+    support: "👍 77% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-258-2023",
+    title: "Ronda Escolar em Horários de Entrada e Saída",
+    status: "Aprovada",
+    location: "Recife",
+    author: "Ver. Pedro Alves",
+    code: "PL 258/2023",
+    summary:
+      "Amplia policiamento ostensivo em perímetro de 200m ao redor de escolas durante horários de entrada e saída de alunos.",
+    topics: ["Segurança", "Educação"],
+    engagements: "🔥 1.4k engajamentos",
+    support: "👍 88% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-369-2025",
+    title: "Corredores de Ônibus Inteligentes",
+    status: "Em votação",
+    location: "Brasília",
+    author: "Dep. Fernanda Rocha",
+    code: "PL 369/2025",
+    summary:
+      "Implementa sistema de semáforos sincronizados e câmeras de fiscalização automática em corredores exclusivos de ônibus.",
+    topics: ["Transporte", "Tecnologia"],
+    engagements: "🔥 934 engajamentos",
+    support: "👍 69% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-741-2024",
+    title: "Prontuário Eletrônico Unificado",
+    status: "Em discussão",
+    location: "São Paulo",
+    author: "Dep. Roberto Farias",
+    code: "PL 741/2024",
+    summary:
+      "Cria plataforma estadual de prontuário eletrônico único, permitindo acesso do paciente a todo histórico médico na rede pública.",
+    topics: ["Saúde", "Tecnologia", "Privacidade"],
+    engagements: "🔥 1.1k engajamentos",
+    support: "👍 73% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-852-2023",
+    title: "Incentivo Fiscal para Energia Solar",
+    status: "Aprovada",
+    location: "Belo Horizonte",
+    author: "Ver. Claudia Nunes",
+    code: "PL 852/2023",
+    summary:
+      "Reduz IPTU em até 20% para imóveis com painéis solares instalados, válido por 10 anos após instalação certificada.",
+    topics: ["Meio Ambiente", "Sustentabilidade"],
+    engagements: "🔥 1.7k engajamentos",
+    support: "👍 80% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
+  {
+    id: "pl-963-2025",
+    title: "Combate ao Bullying nas Escolas",
+    status: "Em discussão",
+    location: "Rio de Janeiro",
+    author: "Ver. Sandra Ribeiro",
+    code: "PL 963/2025",
+    summary:
+      "Estabelece protocolos obrigatórios de prevenção e combate ao bullying escolar, com treinamento semestral de professores e orientadores.",
+    topics: ["Educação", "Segurança"],
+    engagements: "🔥 2.2k engajamentos",
+    support: "👍 91% apoio",
+    videoLabel: "▶ Ver vídeo de 60s",
+  },
 ];
 
 // Topic icon mapping
@@ -102,6 +289,12 @@ const topicIcons: Record<string, React.ComponentType<{ size?: number; weight?: "
   "Serviço Público": Briefcase,
   Educação: GraduationCap,
   Privacidade: LockKey,
+  "Meio Ambiente": Leaf,
+  Segurança: Shield,
+  Tecnologia: Eye,
+  Sustentabilidade: Recycle,
+  Urbanismo: Buildings,
+  Transparência: Eye,
 };
 
 // Status configuration with icons
@@ -141,10 +334,10 @@ function UpvoteButton({ count, active, onClick }: { count: number; active?: bool
       variant={active ? "default" : "outline"}
       size="sm"
       onClick={onClick}
-      className="h-11 min-w-[100px] gap-2 rounded-lg border-foreground/10 px-6 text-sm font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
+      className="h-16 w-20 flex-col gap-1 rounded-lg border-foreground/10 p-2 text-xs font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
     >
       <ThumbsUp
-        size={18}
+        size={20}
         weight={active ? "fill" : "regular"}
       />
       <span className="tabular-nums">{count}%</span>
@@ -274,7 +467,7 @@ function SkeletonCard() {
       actions={
         <div className="flex flex-col items-end gap-2">
           <Skeleton className="h-7 w-24 rounded-full" />
-          <Skeleton className="h-11 w-[100px] rounded-lg" />
+          <Skeleton className="h-16 w-20 rounded-lg" />
         </div>
       }
     >
@@ -289,17 +482,70 @@ function SkeletonCard() {
   );
 }
 
+// Theme mapping: filter ID -> topics to match
+const themeMapping: Record<string, string[]> = {
+  all: [], // Empty array means show all
+  transport: ["Transporte", "Mobilidade"],
+  health: ["Saúde", "Serviço Público"],
+  education: ["Educação"],
+  security: ["Segurança"],
+  privacy: ["Privacidade"],
+  environment: ["Meio Ambiente", "Sustentabilidade", "Urbanismo"],
+};
+
 export default function Home() {
+  // URL state for theme filter
+  const [activeTheme, setActiveTheme] = useQueryState("tema", {
+    defaultValue: "all",
+    clearOnDefault: true,
+  });
+
+  // Filter laws based on active theme
+  const filteredLaws = useMemo(() => {
+    if (activeTheme === "all") {
+      return laws;
+    }
+
+    const themesToMatch = themeMapping[activeTheme] || [];
+    if (themesToMatch.length === 0) {
+      return laws;
+    }
+
+    return laws.filter((law) =>
+      law.topics.some((topic) => themesToMatch.includes(topic))
+    );
+  }, [activeTheme]);
+
+  // Calculate dynamic counts for each theme
+  const themeCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      all: laws.length,
+      transport: 0,
+      health: 0,
+      education: 0,
+      security: 0,
+      privacy: 0,
+      environment: 0,
+    };
+
+    laws.forEach((law) => {
+      Object.entries(themeMapping).forEach(([themeId, topics]) => {
+        if (themeId !== "all" && law.topics.some((topic) => topics.includes(topic))) {
+          counts[themeId]++;
+        }
+      });
+    });
+
+    return counts;
+  }, []);
+
   return (
     <div className="relative min-h-screen">
       <div className="relative mx-auto grid max-w-6xl gap-6 px-4 py-6 sm:grid-cols-[240px_1fr] lg:px-6">
         <aside className="hidden gap-6 sm:flex sm:flex-col">
           <SidebarFilters
-            defaultTheme="all"
-            onThemeChange={(theme) => {
-              console.log("Theme changed:", theme);
-              // TODO: Implement theme filtering logic
-            }}
+            activeTheme={activeTheme}
+            onThemeChange={setActiveTheme}
           />
         </aside>
 
@@ -307,11 +553,8 @@ export default function Home() {
           {/* Mobile Theme Pills - Only visible on small screens */}
           <div className="sm:hidden">
             <MobileFilters
-              defaultTheme="all"
-              onThemeChange={(theme) => {
-                console.log("Theme changed:", theme);
-                // TODO: Implement theme filtering logic
-              }}
+              activeTheme={activeTheme}
+              onThemeChange={setActiveTheme}
             />
           </div>
 
@@ -323,14 +566,14 @@ export default function Home() {
           </div>
 
           <div className="space-y-3">
-            {laws.map((law) => (
+            {filteredLaws.map((law) => (
               <Link key={law.id} href={`/leis/${law.id}`} className="block">
                 <LawCard law={law} />
               </Link>
             ))}
           </div>
 
-          {laws.length === 0 && (
+          {filteredLaws.length === 0 && (
             <Card className="flex flex-col items-center gap-3 px-6 py-10 text-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
                 <Shield size={32} weight="regular" className="text-muted-foreground" />
