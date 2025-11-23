@@ -142,8 +142,8 @@ function CommentItem({ comment, isReply = false }: { comment: Comment | CommentR
               onClick={() => setShowReplies(!showReplies)}
               className="h-auto px-2 py-1 text-xs text-muted-foreground transition-all duration-200 hover:text-foreground"
             >
-              {showReplies ? "Ocultar" : "Ver"} {comment.replies.length}{" "}
-              {comment.replies.length === 1 ? "resposta" : "respostas"}
+              {showReplies ? "Ocultar" : "Ver"} {comment.replies?.length || 0}{" "}
+              {(comment.replies?.length || 0) === 1 ? "resposta" : "respostas"}
             </Button>
           )}
         </div>
@@ -151,7 +151,7 @@ function CommentItem({ comment, isReply = false }: { comment: Comment | CommentR
         {/* Replies */}
         {hasReplies && showReplies && (
           <div className="mt-4 space-y-4 border-l-2 border-border pl-4">
-            {comment.replies.map((reply) => (
+            {(comment.replies || []).map((reply) => (
               <CommentItem key={reply.id} comment={reply} isReply />
             ))}
           </div>
