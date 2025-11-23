@@ -13,6 +13,7 @@ export async function fetchProposicoes(
     url.searchParams.set("itens", itemsPerPage.toString());
     url.searchParams.set("ordem", "desc");
     url.searchParams.set("ordenarPor", "id");
+    url.searchParams.set("siglaTipo", "PL");
 
     const response = await fetch(url.toString(), {
       next: { revalidate: 300 }, // Cache for 5 minutes
