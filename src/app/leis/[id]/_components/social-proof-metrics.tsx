@@ -1,7 +1,6 @@
-import { Eye, ChatCircle, ThumbsUp } from "@phosphor-icons/react/dist/ssr";
+import { ChatCircle, ThumbsUp } from "@phosphor-icons/react/dist/ssr";
 
 interface SocialProofMetricsProps {
-  views: number;
   comments: number;
   supports: number;
 }
@@ -14,17 +13,10 @@ function formatNumber(num: number): string {
 }
 
 export function SocialProofMetrics({
-  views,
   comments,
   supports,
 }: SocialProofMetricsProps) {
   const metrics = [
-    {
-      icon: Eye,
-      label: "visualizações",
-      value: views,
-      ariaLabel: `${views} visualizações`,
-    },
     {
       icon: ChatCircle,
       label: "comentários",

@@ -25,7 +25,7 @@ const topicIcons: Record<string, typeof Bus> = {
 };
 
 interface RelatedBill {
-  id: string;
+  id: number;
   title: string;
   code: string;
   status: string;
