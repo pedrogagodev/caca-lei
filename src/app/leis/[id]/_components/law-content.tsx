@@ -39,6 +39,7 @@ const topicIcons: Record<string, typeof Bus> = {
 
 interface LawContentProps {
   law: {
+    id: number;
     breadcrumb: string[];
     status: string;
     tags: string[];
@@ -160,7 +161,7 @@ export function LawContent({
       />
 
       {/* 4. Engagement Buttons (Reactions) */}
-      <ReactionButtons initialCounts={reactionCounts} />
+      <ReactionButtons billId={law.id} initialCounts={reactionCounts} />
 
       {/* 5. Quick Actions */}
       <QuickActions />
