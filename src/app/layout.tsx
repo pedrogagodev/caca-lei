@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/auth-context";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CaçaLei - Descubra, compare e reaja às leis da sua cidade",
-  description: "Plataforma de engajamento cidadão com leis municipais. Vídeos de 60s, métricas claras e feedback direto.",
+  description:
+    "Plataforma de engajamento cidadão com leis municipais. Vídeos de 60s, métricas claras e feedback direto.",
 };
 
 export default function RootLayout({
@@ -26,17 +28,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="overflow-x-hidden">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg-body text-text-primary`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg-body text-text-primary overflow-x-hidden`}
       >
-        <AuthProvider>
-          <Navbar />
-          <main id="main-content">
-            {children}
-          </main>
-          <Toaster />
-        </AuthProvider>
+        <NuqsAdapter>
+          <AuthProvider>
+            <Navbar />
+            <main id="main-content" className="w-full overflow-x-hidden">{children}</main>
+            <Toaster />
+          </AuthProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

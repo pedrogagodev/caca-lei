@@ -7,7 +7,8 @@ import { extractTextFromPdfUrl } from "@/lib/pdf-parser";
 import { generateSummaryFromText, generateDidacticSummaryFromText } from "@/lib/gemini-summarizer";
 
 // Temporary video URL - replace with actual video source
-const videoSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4";
+const videoSrc =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4";
 
 interface LawDetailPageProps {
   params: Promise<{
@@ -124,6 +125,8 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
           <LawContent
             law={law}
             summary={summary}
+            keyPoints={[]}
+            details={undefined}
             engagementMetrics={engagementMetrics}
             reactionCounts={reactionCounts}
             relatedBills={relatedBills}

@@ -37,7 +37,6 @@ import { toast } from "sonner";
 
 const navLinks = [
   { href: "/", label: "Início" },
-  { href: "/leis", label: "Leis" },
   { href: "/sobre", label: "Sobre" },
 ];
 
@@ -99,10 +98,12 @@ export function Navbar() {
 
       <header
         className={`sticky top-0 z-30 border-b transition-all duration-300 ${
-          isScrolled ? "bg-background/95 backdrop-blur-md" : "bg-background/85 backdrop-blur-md"
+          isScrolled
+            ? "bg-background/95 backdrop-blur-md"
+            : "bg-background/85 backdrop-blur-md"
         }`}
       >
-        <nav className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 lg:px-6">
+        <nav className="mx-auto flex max-w-6xl items-center gap-2 sm:gap-3 md:gap-4 px-4 py-3 lg:px-6">
           {/* Logo with luxury hover effect */}
           <Link
             href="/"
@@ -125,7 +126,8 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="group flex min-w-0 cursor-pointer items-center gap-2 rounded-full border bg-muted/50 px-4 py-2 text-sm text-muted-foreground transition-all duration-200 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:ml-6 md:max-w-md"
+            className="group flex min-w-0 cursor-pointer items-center gap-2 rounded-full border bg-muted/50 px-3 py-2.5 text-base text-muted-foreground transition-all duration-200 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:px-4 sm:py-2 sm:text-sm md:ml-6 max-w-[48px] xs:max-w-none sm:max-w-none md:max-w-md min-h-[44px] sm:min-h-0"
+            aria-label="Buscar leis"
           >
             <MagnifyingGlass
               size={16}
@@ -133,8 +135,8 @@ export function Navbar() {
               className="shrink-0 transition-transform duration-200 group-hover:scale-110"
               aria-hidden="true"
             />
-            <span className="truncate">Buscar leis</span>
-            <kbd className="ml-auto hidden shrink-0 rounded border bg-background px-2 py-0.5 text-xs font-semibold text-muted-foreground transition-colors duration-200 group-hover:border-primary/50 group-hover:text-foreground sm:inline-block">
+            <span className="hidden truncate xs:inline sm:inline">Buscar leis</span>
+            <kbd className="ml-auto hidden shrink-0 rounded border bg-background px-2 py-0.5 text-xs font-semibold text-muted-foreground transition-colors duration-200 group-hover:border-primary/50 group-hover:text-foreground md:inline-block">
               ⌘K
             </kbd>
           </button>
@@ -167,7 +169,7 @@ export function Navbar() {
                     type="button"
                     className="group relative cursor-pointer rounded-full transition-all duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-11 w-11">
                       <AvatarFallback
                         className="bg-primary/40 transition-colors duration-200 group-hover:bg-primary/60"
                         aria-label="Perfil do usuário"
@@ -235,10 +237,7 @@ export function Navbar() {
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="w-[280px] sm:w-[320px]"
-            >
+            <SheetContent side="right" className="w-[280px] sm:w-[320px]">
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
@@ -276,7 +275,10 @@ export function Navbar() {
                       className="w-full cursor-pointer justify-start"
                       asChild
                     >
-                      <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Link
+                        href="/login"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         Entrar
                       </Link>
                     </Button>
@@ -285,7 +287,10 @@ export function Navbar() {
                       className="w-full cursor-pointer justify-start"
                       asChild
                     >
-                      <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Link
+                        href="/register"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         Criar conta
                       </Link>
                     </Button>
@@ -338,4 +343,3 @@ export function Navbar() {
     </>
   );
 }
-

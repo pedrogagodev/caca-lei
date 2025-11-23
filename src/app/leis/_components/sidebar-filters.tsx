@@ -2,22 +2,13 @@
 
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { themes } from "@/constants/theme-data";
 
 interface ThemeSidebarProps {
   defaultTheme?: string;
   onThemeChange?: (theme: string) => void;
   activeTheme?: string;
 }
-
-const themes = [
-  { id: "all", label: "Todas", count: 247 },
-  { id: "transport", label: "Transporte", count: 54 },
-  { id: "health", label: "Saúde", count: 72 },
-  { id: "education", label: "Educação", count: 48 },
-  { id: "security", label: "Segurança", count: 31 },
-  { id: "privacy", label: "Dados & Privacidade", count: 28 },
-  { id: "environment", label: "Meio Ambiente", count: 14 },
-];
 
 export function SidebarFilters({
   defaultTheme = "all",
@@ -47,7 +38,7 @@ export function SidebarFilters({
               key={theme.id}
               type="button"
               onClick={() => handleThemeClick(theme.id)}
-              className={`group relative flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
+              className={`group relative flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
                 isActive
                   ? "bg-background text-foreground shadow-sm ring-1 ring-border"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -60,17 +51,6 @@ export function SidebarFilters({
 
               {/* Label */}
               <span className="flex-1 text-left">{theme.label}</span>
-
-              {/* Count badge */}
-              <span
-                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors duration-150 ${
-                  isActive
-                    ? "bg-primary/10 text-primary"
-                    : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/10 group-hover:text-foreground"
-                }`}
-              >
-                {theme.count}
-              </span>
             </button>
           );
         })}

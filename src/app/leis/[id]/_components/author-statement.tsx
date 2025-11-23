@@ -52,7 +52,9 @@ export function AuthorStatement({ author }: AuthorStatementProps) {
 
       {/* Statement */}
       <div className="prose prose-sm max-w-none text-muted-foreground md:prose-base">
-        <p className="whitespace-pre-line leading-relaxed">{author.statement}</p>
+        <p className="whitespace-pre-line leading-relaxed">
+          {author.statement}
+        </p>
       </div>
     </Card>
   );

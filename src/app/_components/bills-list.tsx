@@ -18,7 +18,7 @@ import {
   ChatCircleIcon,
 } from "@phosphor-icons/react";
 import { Card } from "@/components/ui/card";
-import { LawListCard } from "@/components/ui/law-list-card";
+import { LawListCard } from "@/components/law-list-card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";

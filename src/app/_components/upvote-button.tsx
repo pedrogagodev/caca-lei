@@ -33,10 +33,12 @@ export function UpvoteButton({ billId, initialCount }: UpvoteButtonProps) {
       variant={isUpvoted ? "default" : "outline"}
       size="sm"
       onClick={handleUpvote}
-      className="h-10 gap-2 rounded-full border-foreground/10 px-4 text-sm font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
+      className="h-20 w-20 gap-2 rounded-lg border-foreground/10 p-0 text-sm font-semibold transition-all duration-200 hover:border-primary/40"
     >
-      <ThumbsUp size={18} weight={isUpvoted ? "fill" : "regular"} />
-      <span className="tabular-nums">{upvoteCount}%</span>
+      <div className="flex flex-col items-center justify-center gap-1">
+        <ThumbsUp size={24} weight={isUpvoted ? "fill" : "regular"} />
+        <span className="text-sm font-bold tabular-nums">{upvoteCount}%</span>
+      </div>
     </Button>
   );
 }

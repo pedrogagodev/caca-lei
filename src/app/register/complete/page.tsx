@@ -24,17 +24,7 @@ import {
 import Logo from "@/assets/logo-lei.png";
 import { createClient } from "@/supabase/client";
 import { toast } from "sonner";
-
-type UserRole = "USER" | "GOVERNMENT_WORKER";
-
-interface ProfileData {
-  userRole: UserRole | "";
-  city: string;
-  state: string;
-  country: string;
-  occupation: string;
-  birthDate: string;
-}
+import type { UserRole, ProfileData } from "@/types/user.types";
 
 export default function CompleteRegistrationPage() {
   const router = useRouter();
@@ -55,7 +45,9 @@ export default function CompleteRegistrationPage() {
   useEffect(() => {
     const checkUser = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         router.push("/login");
@@ -155,18 +147,31 @@ export default function CompleteRegistrationPage() {
             <CardContent className="space-y-4">
               <div className="grid gap-4">
                 <Button
-                  variant={profileData.userRole === "USER" ? "default" : "outline"}
+                  variant={
+                    profileData.userRole === "USER" ? "default" : "outline"
+                  }
                   className="h-20 text-lg"
-                  onClick={() => setProfileData({ ...profileData, userRole: "USER" })}
+                  onClick={() =>
+                    setProfileData({ ...profileData, userRole: "USER" })
+                  }
                 >
                   <User size={24} weight="regular" className="mr-2" />
                   Cidadão Comum
                 </Button>
 
                 <Button
-                  variant={profileData.userRole === "GOVERNMENT_WORKER" ? "default" : "outline"}
+                  variant={
+                    profileData.userRole === "GOVERNMENT_WORKER"
+                      ? "default"
+                      : "outline"
+                  }
                   className="h-20 text-lg"
-                  onClick={() => setProfileData({ ...profileData, userRole: "GOVERNMENT_WORKER" })}
+                  onClick={() =>
+                    setProfileData({
+                      ...profileData,
+                      userRole: "GOVERNMENT_WORKER",
+                    })
+                  }
                 >
                   <Briefcase size={24} weight="regular" className="mr-2" />
                   Servidor Público
@@ -180,7 +185,9 @@ export default function CompleteRegistrationPage() {
         return (
           <>
             <CardHeader className="space-y-1 text-center">
-              <CardTitle className="text-2xl font-bold">Onde você mora?</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                Onde você mora?
+              </CardTitle>
               <CardDescription>
                 Essas informações nos ajudam a personalizar sua experiência
               </CardDescription>
@@ -210,7 +217,9 @@ export default function CompleteRegistrationPage() {
                     type="text"
                     placeholder="São Paulo"
                     value={profileData.city}
-                    onChange={(e) => setProfileData({ ...profileData, city: e.target.value })}
+                    onChange={(e) =>
+                      setProfileData({ ...profileData, city: e.target.value })
+                    }
                     className="pl-10"
                     required
                   />
@@ -229,7 +238,9 @@ export default function CompleteRegistrationPage() {
                   type="text"
                   placeholder="SP"
                   value={profileData.state}
-                  onChange={(e) => setProfileData({ ...profileData, state: e.target.value })}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, state: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -245,7 +256,9 @@ export default function CompleteRegistrationPage() {
                   id="country"
                   type="text"
                   value={profileData.country}
-                  onChange={(e) => setProfileData({ ...profileData, country: e.target.value })}
+                  onChange={(e) =>
+                    setProfileData({ ...profileData, country: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -287,7 +300,12 @@ export default function CompleteRegistrationPage() {
                     type="text"
                     placeholder="Ex: Engenheiro, Professor, Estudante"
                     value={profileData.occupation}
-                    onChange={(e) => setProfileData({ ...profileData, occupation: e.target.value })}
+                    onChange={(e) =>
+                      setProfileData({
+                        ...profileData,
+                        occupation: e.target.value,
+                      })
+                    }
                     className="pl-10"
                     required
                   />
@@ -305,8 +323,13 @@ export default function CompleteRegistrationPage() {
                   id="birthDate"
                   type="date"
                   value={profileData.birthDate}
-                  onChange={(e) => setProfileData({ ...profileData, birthDate: e.target.value })}
-                  max={new Date().toISOString().split('T')[0]}
+                  onChange={(e) =>
+                    setProfileData({
+                      ...profileData,
+                      birthDate: e.target.value,
+                    })
+                  }
+                  max={new Date().toISOString().split("T")[0]}
                   required
                 />
               </div>
@@ -343,7 +366,9 @@ export default function CompleteRegistrationPage() {
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium">Passo {step} de 3</span>
-            <span className="text-sm text-muted-foreground">{Math.round((step / 3) * 100)}%</span>
+            <span className="text-sm text-muted-foreground">
+              {Math.round((step / 3) * 100)}%
+            </span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
             <div
@@ -370,10 +395,7 @@ export default function CompleteRegistrationPage() {
             )}
 
             {step < 3 ? (
-              <Button
-                onClick={handleNext}
-                className="flex-1"
-              >
+              <Button onClick={handleNext} className="flex-1">
                 Próximo
                 <ArrowRight size={18} weight="regular" />
               </Button>

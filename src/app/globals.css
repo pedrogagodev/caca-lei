@@ -8,59 +8,59 @@
    ============================================ */
 :root {
   /* Brand - Verde Sapin */
-  --color-brand-50: #F6FAF9;
-  --color-brand-100: #E3EFEC;
-  --color-brand-200: #CEE0DC;
-  --color-brand-300: #AFC9C3;
-  --color-brand-400: #8CB1A9;
-  --color-brand-500: #578C82;
+  --color-brand-50: #f6faf9;
+  --color-brand-100: #e3efec;
+  --color-brand-200: #cee0dc;
+  --color-brand-300: #afc9c3;
+  --color-brand-400: #8cb1a9;
+  --color-brand-500: #578c82;
   --color-brand-600: #467870;
-  --color-brand-700: #2D5B54;
-  --color-brand-800: #254B46;
+  --color-brand-700: #2d5b54;
+  --color-brand-800: #254b46;
   --color-brand-900: #183430;
 
   /* Secondary - Goiaba de Argila */
-  --color-guava-50: #FCF8F7;
-  --color-guava-100: #F4EAE8;
-  --color-guava-200: #E8D5D1;
-  --color-guava-300: #D7B5AE;
-  --color-guava-400: #C99D96;
-  --color-guava-500: #B37A72;
-  --color-guava-600: #9B655E;
+  --color-guava-50: #fcf8f7;
+  --color-guava-100: #f4eae8;
+  --color-guava-200: #e8d5d1;
+  --color-guava-300: #d7b5ae;
+  --color-guava-400: #c99d96;
+  --color-guava-500: #b37a72;
+  --color-guava-600: #9b655e;
   --color-guava-700: #764641;
-  --color-guava-800: #643B36;
-  --color-guava-900: #4A2A26;
+  --color-guava-800: #643b36;
+  --color-guava-900: #4a2a26;
 
   /* Accent - Amarelo Cerâmico */
-  --color-accent-50: #FBF8EF;
-  --color-accent-100: #F4EAD1;
-  --color-accent-200: #EDDFBD;
-  --color-accent-300: #E3CFA0;
-  --color-accent-400: #D7BE8A;
-  --color-accent-500: #C5A56A;
-  --color-accent-600: #AF925C;
-  --color-accent-700: #8D7547;
-  --color-accent-800: #79643D;
-  --color-accent-900: #5A4A2E;
+  --color-accent-50: #fbf8ef;
+  --color-accent-100: #f4ead1;
+  --color-accent-200: #eddfbd;
+  --color-accent-300: #e3cfa0;
+  --color-accent-400: #d7be8a;
+  --color-accent-500: #c5a56a;
+  --color-accent-600: #af925c;
+  --color-accent-700: #8d7547;
+  --color-accent-800: #79643d;
+  --color-accent-900: #5a4a2e;
 
   /* Neutrals - Cinza Granito (White Theme) */
-  --color-bg-body: #FFFFFF;
-  --color-bg-subtle: #F7F7F8;
-  --color-bg-card: #F1F2F3;
+  --color-bg-body: #ffffff;
+  --color-bg-subtle: #f7f7f8;
+  --color-bg-card: #f1f2f3;
 
-  --color-border-light: #E3E4E6;
-  --color-border: #D4D5D8;
-  --color-border-strong: #B8B9BD;
+  --color-border-light: #e3e4e6;
+  --color-border: #d4d5d8;
+  --color-border-strong: #b8b9bd;
 
   --color-text-primary: #111314;
-  --color-text-secondary: #5C6063;
-  --color-text-muted: #8D9094;
+  --color-text-secondary: #5c6063;
+  --color-text-muted: #8d9094;
 
   /* Semantic Colors */
-  --color-success: #3A8E7A;
-  --color-warning: #C59A3A;
-  --color-danger: #C15F5A;
-  --color-info: #4B89B2;
+  --color-success: #3a8e7a;
+  --color-warning: #c59a3a;
+  --color-danger: #c15f5a;
+  --color-info: #4b89b2;
 
   /* Legacy variables for compatibility */
 
@@ -135,59 +135,59 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* Brand - Verde Sapin (Dark Mode) */
-    --color-brand-50: #0D1E1C;
-    --color-brand-100: #132F2B;
-    --color-brand-200: #1A403A;
+    --color-brand-50: #0d1e1c;
+    --color-brand-100: #132f2b;
+    --color-brand-200: #1a403a;
     --color-brand-300: #235249;
-    --color-brand-400: #31685D;
-    --color-brand-500: #4A8679;
-    --color-brand-600: #5FA193;
-    --color-brand-700: #7EBCAE;
-    --color-brand-800: #A5D3C8;
-    --color-brand-900: #D4EBE6;
+    --color-brand-400: #31685d;
+    --color-brand-500: #4a8679;
+    --color-brand-600: #5fa193;
+    --color-brand-700: #7ebcae;
+    --color-brand-800: #a5d3c8;
+    --color-brand-900: #d4ebe6;
 
     /* Secondary - Goiaba de Argila (Dark Mode) */
     --color-guava-50: #241412;
-    --color-guava-100: #3A241F;
-    --color-guava-200: #52342C;
-    --color-guava-300: #6B443B;
-    --color-guava-400: #87594F;
-    --color-guava-500: #A87267;
-    --color-guava-600: #C38E84;
-    --color-guava-700: #D9AEA7;
-    --color-guava-800: #E9CDC7;
-    --color-guava-900: #F5E8E5;
+    --color-guava-100: #3a241f;
+    --color-guava-200: #52342c;
+    --color-guava-300: #6b443b;
+    --color-guava-400: #87594f;
+    --color-guava-500: #a87267;
+    --color-guava-600: #c38e84;
+    --color-guava-700: #d9aea7;
+    --color-guava-800: #e9cdc7;
+    --color-guava-900: #f5e8e5;
 
     /* Accent - Amarelo Cerâmico (Dark Mode) */
-    --color-accent-50: #1C1710;
-    --color-accent-100: #2E2518;
+    --color-accent-50: #1c1710;
+    --color-accent-100: #2e2518;
     --color-accent-200: #413520;
-    --color-accent-300: #5A4929;
+    --color-accent-300: #5a4929;
     --color-accent-400: #786137;
-    --color-accent-500: #9C7E4C;
-    --color-accent-600: #BB9D68;
-    --color-accent-700: #D4BE8E;
-    --color-accent-800: #E6D9B8;
-    --color-accent-900: #F4EFE0;
+    --color-accent-500: #9c7e4c;
+    --color-accent-600: #bb9d68;
+    --color-accent-700: #d4be8e;
+    --color-accent-800: #e6d9b8;
+    --color-accent-900: #f4efe0;
 
     /* Neutrals - Cinza Granito (Dark Mode) */
-    --color-bg-body: #0A0A0A;
+    --color-bg-body: #0a0a0a;
     --color-bg-subtle: #141415;
-    --color-bg-card: #1C1C1E;
+    --color-bg-card: #1c1c1e;
 
-    --color-border-light: #2A2A2D;
-    --color-border: #3A3A3D;
-    --color-border-strong: #52525A;
+    --color-border-light: #2a2a2d;
+    --color-border: #3a3a3d;
+    --color-border-strong: #52525a;
 
-    --color-text-primary: #EDEDED;
-    --color-text-secondary: #A1A1A6;
-    --color-text-muted: #71717A;
+    --color-text-primary: #ededed;
+    --color-text-secondary: #a1a1a6;
+    --color-text-muted: #71717a;
 
     /* Semantic Colors (Dark Mode) */
-    --color-success: #4DAB93;
-    --color-warning: #D4AC5A;
-    --color-danger: #D77B76;
-    --color-info: #6BA3CF;
+    --color-success: #4dab93;
+    --color-warning: #d4ac5a;
+    --color-danger: #d77b76;
+    --color-info: #6ba3cf;
 
     /* Legacy variables for compatibility */
   }
@@ -299,65 +299,66 @@
 body {
   background: var(--color-bg-body);
   color: var(--color-text-primary);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Force light palette regardless of system preference */
 :root {
-  --color-brand-50: #F6FAF9;
-  --color-brand-100: #E3EFEC;
-  --color-brand-200: #CEE0DC;
-  --color-brand-300: #AFC9C3;
-  --color-brand-400: #8CB1A9;
-  --color-brand-500: #578C82;
+  --color-brand-50: #f6faf9;
+  --color-brand-100: #e3efec;
+  --color-brand-200: #cee0dc;
+  --color-brand-300: #afc9c3;
+  --color-brand-400: #8cb1a9;
+  --color-brand-500: #578c82;
   --color-brand-600: #467870;
-  --color-brand-700: #2D5B54;
-  --color-brand-800: #254B46;
+  --color-brand-700: #2d5b54;
+  --color-brand-800: #254b46;
   --color-brand-900: #183430;
 
-  --color-guava-50: #FCF8F7;
-  --color-guava-100: #F4EAE8;
-  --color-guava-200: #E8D5D1;
-  --color-guava-300: #D7B5AE;
-  --color-guava-400: #C99D96;
-  --color-guava-500: #B37A72;
-  --color-guava-600: #9B655E;
+  --color-guava-50: #fcf8f7;
+  --color-guava-100: #f4eae8;
+  --color-guava-200: #e8d5d1;
+  --color-guava-300: #d7b5ae;
+  --color-guava-400: #c99d96;
+  --color-guava-500: #b37a72;
+  --color-guava-600: #9b655e;
   --color-guava-700: #764641;
-  --color-guava-800: #643B36;
-  --color-guava-900: #4A2A26;
+  --color-guava-800: #643b36;
+  --color-guava-900: #4a2a26;
 
-  --color-accent-50: #FBF8EF;
-  --color-accent-100: #F4EAD1;
-  --color-accent-200: #EDDFBD;
-  --color-accent-300: #E3CFA0;
-  --color-accent-400: #D7BE8A;
-  --color-accent-500: #C5A56A;
-  --color-accent-600: #AF925C;
-  --color-accent-700: #8D7547;
-  --color-accent-800: #79643D;
-  --color-accent-900: #5A4A2E;
+  --color-accent-50: #fbf8ef;
+  --color-accent-100: #f4ead1;
+  --color-accent-200: #eddfbd;
+  --color-accent-300: #e3cfa0;
+  --color-accent-400: #d7be8a;
+  --color-accent-500: #c5a56a;
+  --color-accent-600: #af925c;
+  --color-accent-700: #8d7547;
+  --color-accent-800: #79643d;
+  --color-accent-900: #5a4a2e;
 
-  --color-bg-body: #FFFFFF;
-  --color-bg-subtle: #F7F7F8;
-  --color-bg-card: #F1F2F3;
-  --color-border-light: #E3E4E6;
-  --color-border: #D4D5D8;
-  --color-border-strong: #B8B9BD;
+  --color-bg-body: #ffffff;
+  --color-bg-subtle: #f7f7f8;
+  --color-bg-card: #f1f2f3;
+  --color-border-light: #e3e4e6;
+  --color-border: #d4d5d8;
+  --color-border-strong: #b8b9bd;
   --color-text-primary: #111314;
-  --color-text-secondary: #5C6063;
-  --color-text-muted: #8D9094;
+  --color-text-secondary: #5c6063;
+  --color-text-muted: #8d9094;
 
-  --color-success: #3A8E7A;
-  --color-warning: #C59A3A;
-  --color-danger: #C15F5A;
-  --color-info: #4B89B2;
+  --color-success: #3a8e7a;
+  --color-warning: #c59a3a;
+  --color-danger: #c15f5a;
+  --color-info: #4b89b2;
 
   --background: var(--color-bg-body);
   --foreground: var(--color-text-primary);
 }
-
 
 .dark {
   --background: oklch(0.145 0 0);

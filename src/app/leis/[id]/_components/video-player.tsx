@@ -101,7 +101,10 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
       // Keep controls visible when paused
       hideControlsTimeoutRef.current = null;
     } else {
-      hideControlsTimeoutRef.current = setTimeout(() => setShowControls(false), 2000);
+      hideControlsTimeoutRef.current = setTimeout(
+        () => setShowControls(false),
+        2000,
+      );
     }
   };
 
@@ -177,7 +180,10 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
 
     // Auto-hide controls after 2 seconds
     if (isPlaying) {
-      hideControlsTimeoutRef.current = setTimeout(() => setShowControls(false), 2000);
+      hideControlsTimeoutRef.current = setTimeout(
+        () => setShowControls(false),
+        2000,
+      );
     }
   };
 
@@ -226,7 +232,7 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
       <div
         className={cn(
           "flex aspect-[9/16] w-full items-center justify-center rounded-2xl bg-muted",
-          className
+          className,
         )}
       >
         <div className="text-center">
@@ -240,7 +246,10 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
 
   return (
     <div
-      className={cn("relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black", className)}
+      className={cn(
+        "relative aspect-[9/16] w-full overflow-hidden rounded-2xl bg-black",
+        className,
+      )}
       onClick={handleVideoClick}
       onKeyDown={handleKeyPress}
       onMouseEnter={handleMouseEnter}
@@ -277,7 +286,7 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
       <div
         className={cn(
           "pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-300",
-          showControls && !isLoading ? "opacity-100" : "opacity-0"
+          showControls && !isLoading ? "opacity-100" : "opacity-0",
         )}
       >
         <div className="rounded-full bg-black/60 p-4 backdrop-blur-sm transition-transform duration-200">
@@ -293,7 +302,7 @@ export function VideoPlayer({ src, poster, className }: VideoPlayerProps) {
       <div
         className={cn(
           "pointer-events-none absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-4 pb-4 pt-8 transition-opacity duration-300",
-          showControls || !isPlaying ? "opacity-100" : "opacity-0"
+          showControls || !isPlaying ? "opacity-100" : "opacity-0",
         )}
       >
         {/* Progress Bar */}

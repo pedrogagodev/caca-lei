@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   MagnifyingGlass,
   BookOpen,
-  Clock,
-  TrendUp,
 } from "@phosphor-icons/react";
 import {
   CommandDialog,
@@ -15,46 +13,9 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from "@/components/ui/command";
-
-// Mock data - replace with real data from your API/database
-const mockLaws = [
-  {
-    id: "1",
-    number: "Lei 13.709/2018",
-    title: "Lei Geral de Proteção de Dados (LGPD)",
-    category: "Privacidade",
-  },
-  {
-    id: "2",
-    number: "Lei 12.965/2014",
-    title: "Marco Civil da Internet",
-    category: "Internet",
-  },
-  {
-    id: "3",
-    number: "Lei 8.078/1990",
-    title: "Código de Defesa do Consumidor",
-    category: "Consumidor",
-  },
-  {
-    id: "4",
-    number: "Lei 9.610/1998",
-    title: "Lei de Direitos Autorais",
-    category: "Propriedade Intelectual",
-  },
-];
-
-const recentSearches = [
-  { id: "r1", query: "LGPD", timestamp: "2 horas atrás" },
-  { id: "r2", query: "Marco Civil", timestamp: "1 dia atrás" },
-];
-
-const trendingSearches = [
-  { id: "t1", query: "reforma tributária", count: 245 },
-  { id: "t2", query: "direito digital", count: 189 },
-];
+import { searchBills } from "@/app/actions/bills";
+import type { Bill } from "@/types/database.types";
 
 interface SearchCommandPaletteProps {
   open?: boolean;
@@ -68,6 +29,8 @@ export function SearchCommandPalette({
   const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [results, setResults] = useState<Bill[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Use controlled or uncontrolled state
   const isControlled = controlledOpen !== undefined;
@@ -79,28 +42,45 @@ export function SearchCommandPalette({
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((prev: boolean) => !prev);
+        setOpen(!open);
       }
     };
 
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, [setOpen]);
+  }, [setOpen, open]);
+
+  // Debounced search effect
+  useEffect(() => {
+    if (!search || search.trim().length < 2) {
+      setResults([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const bills = await searchBills(search);
+        setResults(bills);
+      } catch (error) {
+        console.error("Error searching bills:", error);
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [search]);
 
   const handleSelect = useCallback(
     (callback: () => void) => {
       setOpen(false);
       callback();
     },
-    []
-  );
-
-  const filteredLaws = mockLaws.filter(
-    (law) =>
-      search === "" ||
-      law.title.toLowerCase().includes(search.toLowerCase()) ||
-      law.number.toLowerCase().includes(search.toLowerCase()) ||
-      law.category.toLowerCase().includes(search.toLowerCase())
+    [setOpen],
   );
 
   return (
@@ -113,123 +93,95 @@ export function SearchCommandPalette({
         aria-label="Abrir busca"
       />
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
         <CommandInput
-          placeholder="Busque por tema, número ou palavra-chave..."
+          placeholder="Busque por tema, número ou palavra-chave…"
           value={search}
           onValueChange={setSearch}
-          className="border-none focus:ring-0"
+          className="h-14 border-none text-base focus:ring-0"
         />
-        <CommandList className="max-h-[400px]">
-          <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
-            Nenhum resultado encontrado.
+        <CommandList className="max-h-[400px] scroll-py-2">
+          {/* Show different messages based on state */}
+          <CommandEmpty className="py-12 text-center">
+            <div className="mx-auto flex max-w-xs flex-col items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
+                <MagnifyingGlass
+                  size={24}
+                  weight="regular"
+                  className="text-muted-foreground/60"
+                />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">
+                  {search.trim().length < 2
+                    ? "Comece a digitar para buscar"
+                    : isLoading
+                      ? "Buscando..."
+                      : "Nenhum resultado encontrado"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {search.trim().length < 2
+                    ? "Digite pelo menos 2 caracteres para buscar leis"
+                    : isLoading
+                      ? "Aguarde enquanto buscamos as leis"
+                      : "Tente buscar por outro termo ou palavra-chave"}
+                </p>
+              </div>
+              {search && search.trim().length >= 2 && !isLoading && (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="mt-2 text-xs text-primary transition-colors hover:text-primary/80 hover:underline"
+                >
+                  Limpar busca
+                </button>
+              )}
+            </div>
           </CommandEmpty>
 
-          {/* Recent Searches */}
-          {search === "" && recentSearches.length > 0 && (
-            <>
-              <CommandGroup heading="Buscas Recentes">
-                {recentSearches.map((item) => (
-                  <CommandItem
-                    key={item.id}
-                    onSelect={() =>
-                      handleSelect(() => {
-                        setSearch(item.query);
-                      })
-                    }
-                    className="group cursor-pointer gap-2 transition-colors duration-150"
-                  >
-                    <Clock
-                      size={16}
-                      weight="regular"
-                      className="shrink-0 text-muted-foreground transition-colors duration-150 group-hover:text-primary"
-                    />
-                    <div className="flex flex-1 items-center justify-between">
-                      <span className="transition-colors duration-150 group-hover:text-primary">
-                        {item.query}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {item.timestamp}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandSeparator />
-            </>
-          )}
-
-          {/* Trending Searches */}
-          {search === "" && trendingSearches.length > 0 && (
-            <>
-              <CommandGroup heading="Em Alta">
-                {trendingSearches.map((item) => (
-                  <CommandItem
-                    key={item.id}
-                    onSelect={() =>
-                      handleSelect(() => {
-                        setSearch(item.query);
-                      })
-                    }
-                    className="group cursor-pointer gap-2 transition-colors duration-150"
-                  >
-                    <TrendUp
-                      size={16}
-                      weight="regular"
-                      className="shrink-0 text-muted-foreground transition-colors duration-150 group-hover:text-primary"
-                    />
-                    <div className="flex flex-1 items-center justify-between">
-                      <span className="transition-colors duration-150 group-hover:text-primary">
-                        {item.query}
-                      </span>
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground transition-colors duration-150 group-hover:bg-primary/10">
-                        {item.count}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandSeparator />
-            </>
-          )}
-
-          {/* Law Results */}
-          {filteredLaws.length > 0 && (
-            <CommandGroup heading="Leis">
-              {filteredLaws.map((law) => (
+          {/* Search Results */}
+          {!isLoading && results.length > 0 && (
+            <CommandGroup heading="Resultados">
+              {results.map((bill, index) => (
                 <CommandItem
-                  key={law.id}
+                  key={bill.id}
+                  value={String(bill.id)}
                   onSelect={() =>
                     handleSelect(() => {
-                      router.push(`/leis/${law.id}`);
+                      router.push(`/leis/${bill.id}`);
                     })
                   }
-                  className="group cursor-pointer gap-3 py-3 transition-all duration-150"
+                  style={{
+                    animationDelay: `${index * 30}ms`,
+                    animationFillMode: "backwards",
+                  }}
+                  className="group cursor-pointer gap-3 rounded-lg px-3 py-3 transition-all duration-200 data-[selected=true]:bg-accent/60 hover:bg-accent/40 animate-in fade-in slide-in-from-bottom-1"
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-all duration-150 group-hover:bg-primary/20 group-hover:scale-105">
+                  <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 transition-all duration-200 group-hover:scale-110 group-hover:bg-primary/20 group-hover:shadow-sm group-hover:shadow-primary/20">
                     <BookOpen
-                      size={18}
+                      size={20}
                       weight="regular"
-                      className="text-primary"
+                      className="text-primary transition-transform duration-200 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 rounded-lg ring-1 ring-primary/0 transition-all duration-200 group-hover:ring-primary/30" />
                   </div>
-                  <div className="flex flex-1 flex-col gap-0.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-muted-foreground transition-colors duration-150 group-hover:text-primary">
-                        {law.number}
-                      </span>
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                        {law.category}
-                      </span>
-                    </div>
-                    <span className="text-sm font-medium transition-colors duration-150 group-hover:text-primary">
-                      {law.title}
+                  <div className="flex flex-1 flex-col gap-1">
+                    <span className="font-mono text-[11px] font-semibold uppercase tracking-wider tabular-nums text-muted-foreground transition-colors duration-150 group-hover:text-primary">
+                      {bill.code}
                     </span>
+                    <span className="text-sm font-medium leading-tight tracking-tight text-foreground transition-colors duration-150">
+                      {bill.title}
+                    </span>
+                    {bill.tags && bill.tags.length > 0 && (
+                      <span className="mt-0.5 w-fit rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground transition-all duration-150 group-hover:bg-primary/10 group-hover:text-primary">
+                        {bill.tags[0]}
+                      </span>
+                    )}
                   </div>
                   <MagnifyingGlass
                     size={16}
                     weight="regular"
-                    className="shrink-0 text-muted-foreground opacity-0 transition-all duration-150 group-hover:opacity-100"
+                    className="shrink-0 text-muted-foreground opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
                   />
                 </CommandItem>
               ))}
@@ -238,30 +190,32 @@ export function SearchCommandPalette({
         </CommandList>
 
         {/* Footer with keyboard shortcuts */}
-        <div className="border-t bg-muted/30 px-4 py-2">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="border-t border-border/60 bg-gradient-to-b from-muted/20 to-muted/40 px-4 py-3 backdrop-blur-sm">
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <kbd className="rounded bg-background px-1.5 py-0.5 font-mono font-semibold border border-border/60">
-                  ↑
-                </kbd>
-                <kbd className="rounded bg-background px-1.5 py-0.5 font-mono font-semibold border border-border/60">
-                  ↓
-                </kbd>
-                <span className="ml-1">navegar</span>
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-0.5">
+                  <kbd className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-border/60 bg-background px-1 font-mono text-[10px] font-semibold shadow-sm transition-all duration-150 hover:border-foreground/20 hover:shadow">
+                    ↑
+                  </kbd>
+                  <kbd className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-border/60 bg-background px-1 font-mono text-[10px] font-semibold shadow-sm transition-all duration-150 hover:border-foreground/20 hover:shadow">
+                    ↓
+                  </kbd>
+                </div>
+                <span className="ml-0.5 font-medium">navegar</span>
               </div>
-              <div className="flex items-center gap-1">
-                <kbd className="rounded bg-background px-1.5 py-0.5 font-mono font-semibold border border-border/60">
-                  Enter
+              <div className="flex items-center gap-1.5">
+                <kbd className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-border/60 bg-background px-1.5 font-mono text-[10px] font-semibold shadow-sm transition-all duration-150 hover:border-foreground/20 hover:shadow">
+                  ↵
                 </kbd>
-                <span className="ml-1">selecionar</span>
+                <span className="font-medium">selecionar</span>
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <kbd className="rounded bg-background px-1.5 py-0.5 font-mono font-semibold border border-border/60">
+            <div className="flex items-center gap-1.5">
+              <kbd className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-border/60 bg-background px-1.5 font-mono text-[10px] font-semibold shadow-sm transition-all duration-150 hover:border-foreground/20 hover:shadow">
                 Esc
               </kbd>
-              <span className="ml-1">fechar</span>
+              <span className="font-medium">fechar</span>
             </div>
           </div>
         </div>

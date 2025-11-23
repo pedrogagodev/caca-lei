@@ -7,10 +7,7 @@ interface ReactionButtonProps {
 
 export function ReactionButton({ label, active }: ReactionButtonProps) {
   return (
-    <Button
-      variant={active ? "default" : "outline"}
-      className="w-full"
-    >
+    <Button variant={active ? "default" : "outline"} className="w-full">
       {label}
     </Button>
   );

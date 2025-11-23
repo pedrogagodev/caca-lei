@@ -1,4 +1,4 @@
-import { LawListCard } from "@/components/ui/law-list-card";
+import { LawListCard } from "@/components/law-list-card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function SkeletonCard() {

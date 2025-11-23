@@ -3,6 +3,8 @@
 import { createClient } from "@/supabase/server";
 import type {
   Bill,
+  BillComment,
+  BillCommentReply,
   BillWithDetails,
   ReactionCounts,
 } from "@/types/database.types";
@@ -245,6 +247,114 @@ export async function getBillById(id: string): Promise<BillWithDetails | null> {
   }
 }
 
+/**
+ * Fetch all comments for a bill with nested replies and author profiles
+ */
+export async function getBillComments(
+  billId: string,
+): Promise<BillComment[]> {
+  const supabase = await createClient();
+
+  try {
+    const numericBillId = Number.parseInt(billId, 10);
+    
+    if (Number.isNaN(numericBillId)) {
+      console.error("Invalid bill ID for comments:", billId);
+      return [];
+    }
+
+    // Fetch top-level comments with author profiles
+    const { data: comments, error: commentsError } = await supabase
+      .from("bill_comments")
+      .select(
+        `
+        id,
+        bill_id,
+        user_id,
+        text,
+        upvotes,
+        created_at,
+        author:profiles!bill_comments_user_id_fkey (
+          id,
+          full_name,
+          avatar_url
+        )
+      `,
+      )
+      .eq("bill_id", numericBillId)
+      .order("created_at", { ascending: false });
+
+    if (commentsError) {
+      console.error("Error fetching comments:", commentsError);
+      return [];
+    }
+
+    if (!comments || comments.length === 0) {
+      return [];
+    }
+
+    // Fetch all replies for these comments with author profiles
+    const commentIds = comments.map((c) => c.id);
+    const { data: replies, error: repliesError } = await supabase
+      .from("bill_comment_replies")
+      .select(
+        `
+        id,
+        comment_id,
+        user_id,
+        text,
+        upvotes,
+        created_at,
+        author:profiles!bill_comment_replies_user_id_fkey (
+          id,
+          full_name,
+          avatar_url
+        )
+      `,
+      )
+      .in("comment_id", commentIds)
+      .order("created_at", { ascending: true });
+
+    if (repliesError) {
+      console.error("Error fetching replies:", repliesError);
+    }
+
+    // Group replies by comment_id and normalize author field
+    const repliesByCommentId: Record<string, BillCommentReply[]> = {};
+    if (replies) {
+      for (const reply of replies) {
+        if (!repliesByCommentId[reply.comment_id]) {
+          repliesByCommentId[reply.comment_id] = [];
+        }
+        const replyData: BillCommentReply = {
+          ...reply,
+          author: Array.isArray(reply.author)
+            ? reply.author[0]
+            : reply.author,
+        } as BillCommentReply;
+        repliesByCommentId[reply.comment_id].push(replyData);
+      }
+    }
+
+    // Combine comments with their replies
+    const commentsWithReplies: BillComment[] = comments.map((comment) => {
+      const commentData: BillComment = {
+        ...comment,
+        author: Array.isArray(comment.author)
+          ? comment.author[0]
+          : comment.author,
+        replies: repliesByCommentId[comment.id] || [],
+      } as BillComment;
+      return commentData;
+    });
+
+    return commentsWithReplies;
+  } catch (error) {
+    console.error("Error in getBillComments:", error);
+    return [];
+  }
+}
+
 export async function getAllBills(options?: {
   limit?: number;
   offset?: number;
@@ -336,5 +446,131 @@ export async function updateBillSummaries(
   } catch (error) {
     console.error("Error in updateBillSummaries:", error);
     return false;
+  }
+}
+
+export async function removeBillReaction(billId: number): Promise<boolean> {
+  const supabase = await createClient();
+
+  try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("User not authenticated:", userError);
+      return false;
+    }
+
+    const { error } = await supabase
+      .from("bill_reactions")
+      .delete()
+      .eq("bill_id", billId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error removing reaction:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in removeBillReaction:", error);
+    return false;
+  }
+}
+
+// Normalize text so searches ignore accents/diacritics
+function normalizeText(text: string) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function billMatchesTerm(bill: Bill, normalizedTerm: string) {
+  const searchableFields = [
+    bill.title,
+    bill.code,
+    bill.summary || "",
+    bill.location,
+    bill.author,
+    ...(bill.tags || []),
+  ];
+
+  return searchableFields
+    .filter(Boolean)
+    .map((field) => normalizeText(String(field)))
+    .some((field) => field.includes(normalizedTerm));
+}
+
+/**
+ * Search bills by term (searches in title, code, tags, summary)
+ */
+export async function searchBills(searchTerm: string): Promise<Bill[]> {
+  const supabase = await createClient();
+
+  // Return empty if search term is empty or too short
+  if (!searchTerm || searchTerm.trim().length < 2) {
+    return [];
+  }
+
+  try {
+    const term = searchTerm.trim();
+    const normalizedTerm = normalizeText(term);
+
+    // Primary search with raw term (accent-sensitive)
+    const { data: primaryData, error: primaryError } = await supabase
+      .from("bills")
+      .select("*")
+      .or(
+        `title.ilike.%${term}%,code.ilike.%${term}%,summary.ilike.%${term}%`,
+      )
+      .order("views", { ascending: false })
+      .limit(50);
+
+    if (primaryError) {
+      console.error("Error searching bills:", primaryError);
+      return [];
+    }
+
+    // Accent-insensitive filtering across title/code/summary/tags/location/author
+    let results = ((primaryData as Bill[]) || []).filter((bill) =>
+      billMatchesTerm(bill, normalizedTerm),
+    );
+
+    // Fallback: broaden search to catch accentless/tag-only queries
+    if (results.length < 10) {
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from("bills")
+        .select("*")
+        .order("views", { ascending: false })
+        .limit(200);
+
+      if (fallbackError) {
+        console.error(
+          "Error fetching fallback bills for search:",
+          fallbackError,
+        );
+      } else {
+        const fallbackMatches = ((fallbackData as Bill[]) || []).filter(
+          (bill) => billMatchesTerm(bill, normalizedTerm),
+        );
+
+        const seenIds = new Set(results.map((bill) => bill.id));
+        for (const bill of fallbackMatches) {
+          if (seenIds.has(bill.id)) continue;
+          results.push(bill);
+          seenIds.add(bill.id);
+          if (results.length >= 10) break;
+        }
+      }
+    }
+
+    return results.slice(0, 10);
+  } catch (error) {
+    console.error("Error in searchBills:", error);
+    return [];
   }
 }

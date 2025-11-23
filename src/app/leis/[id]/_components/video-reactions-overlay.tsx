@@ -77,7 +77,9 @@ const reactions: Reaction[] = [
 ];
 
 export function VideoReactionsOverlay() {
-  const [selectedReaction, setSelectedReaction] = useState<ReactionId | null>(null);
+  const [selectedReaction, setSelectedReaction] = useState<ReactionId | null>(
+    null,
+  );
 
   const handleReactionClick = (reactionId: ReactionId) => {
     setSelectedReaction(selectedReaction === reactionId ? null : reactionId);
@@ -90,7 +92,7 @@ export function VideoReactionsOverlay() {
         // Mobile: Bottom-right (above thumb zone)
         "bottom-6 right-3",
         // Desktop: Center-right
-        "lg:right-6 lg:top-1/2 lg:-translate-y-1/2 lg:bottom-auto"
+        "lg:right-6 lg:top-1/2 lg:-translate-y-1/2 lg:bottom-auto",
       )}
     >
       {reactions.map((reaction) => {
@@ -106,7 +108,8 @@ export function VideoReactionsOverlay() {
               "flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-full border transition-all duration-200",
               "backdrop-blur-md",
               // Default state
-              !isActive && "border-white/10 bg-black/40 hover:scale-110 hover:bg-black/60",
+              !isActive &&
+                "border-white/10 bg-black/40 hover:scale-110 hover:bg-black/60",
               // Active state with color glow
               isActive && [
                 "scale-110",
@@ -115,7 +118,7 @@ export function VideoReactionsOverlay() {
               ],
               // Hover and active interactions
               "active:scale-95",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
             )}
           >
             <ReactionIcon
@@ -123,14 +126,16 @@ export function VideoReactionsOverlay() {
               weight={isActive ? "fill" : "regular"}
               className={cn(
                 "transition-colors duration-200",
-                isActive ? reaction.activeColor.icon : "text-white"
+                isActive ? reaction.activeColor.icon : "text-white",
               )}
               aria-hidden="true"
             />
-            <span className={cn(
-              "text-[10px] font-semibold leading-none tabular-nums",
-              isActive ? reaction.activeColor.text : "text-white"
-            )}>
+            <span
+              className={cn(
+                "text-[10px] font-semibold leading-none tabular-nums",
+                isActive ? reaction.activeColor.text : "text-white",
+              )}
+            >
               {reaction.count}
             </span>
           </button>

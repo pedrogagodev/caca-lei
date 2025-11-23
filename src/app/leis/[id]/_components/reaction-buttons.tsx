@@ -136,9 +136,7 @@ export function ReactionButtons({
       {/* Header */}
       <div>
         <h3 className="text-sm font-medium text-foreground">Sua opinião</h3>
-        <p className="text-xs text-muted-foreground">
-          Como esta lei te afeta?
-        </p>
+        <p className="text-xs text-muted-foreground">Como esta lei te afeta?</p>
       </div>
 
       {/* Reaction Buttons Grid */}
@@ -147,7 +145,8 @@ export function ReactionButtons({
           const isActive = selectedReaction === reaction.id;
           const displayCount = reaction.count + (isActive ? 1 : 0);
           const ReactionIcon = reaction.icon;
-          const styles = reactionStyles[reaction.id as keyof typeof reactionStyles];
+          const styles =
+            reactionStyles[reaction.id as keyof typeof reactionStyles];
 
           return (
             <button
@@ -186,7 +185,6 @@ export function ReactionButtons({
                 isActive && styles.bg,
                 isActive && styles.text,
 
-
                 isPending && "opacity-50 cursor-not-allowed"
               )}
             >
@@ -196,7 +194,7 @@ export function ReactionButtons({
                 weight={isActive ? "fill" : "regular"}
                 className={cn(
                   "transition-colors duration-200",
-                  isActive ? styles.icon : "text-muted-foreground"
+                  isActive ? styles.icon : "text-muted-foreground",
                 )}
                 aria-hidden="true"
               />
@@ -209,7 +207,7 @@ export function ReactionButtons({
                 <span
                   className={cn(
                     "tabular-nums text-[10px] font-semibold",
-                    isActive ? styles.text : "text-muted-foreground/70"
+                    isActive ? styles.text : "text-muted-foreground/70",
                   )}
                 >
                   {displayCount}
