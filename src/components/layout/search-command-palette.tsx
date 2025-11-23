@@ -145,7 +145,7 @@ export function SearchCommandPalette({
               {results.map((bill, index) => (
                 <CommandItem
                   key={bill.id}
-                  value={bill.id}
+                  value={String(bill.id)}
                   onSelect={() =>
                     handleSelect(() => {
                       router.push(`/leis/${bill.id}`);

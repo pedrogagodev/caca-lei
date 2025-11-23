@@ -41,17 +41,6 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
 
   const summary = billData.summary || "Resumo não disponível.";
 
-  // Key points - from database or default empty array
-  const keyPoints = billData.keyPoints || [];
-
-  // Details - from database or default empty object
-  const details = billData.details || {
-    objective: "",
-    howItWorks: "",
-    whoIsImpacted: "",
-    nextSteps: "",
-  };
-
   const engagementMetrics = {
     comments: billData.comments_count,
     supports: billData.supports_count,
@@ -100,8 +89,8 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
           <LawContent
             law={law}
             summary={summary}
-            keyPoints={keyPoints}
-            details={details}
+            keyPoints={[]}
+            details={undefined}
             engagementMetrics={engagementMetrics}
             reactionCounts={reactionCounts}
             relatedBills={relatedBills}

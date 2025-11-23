@@ -61,7 +61,7 @@ export function LawCard({ law }: LawCardProps) {
             variant={status.variant}
             className={`gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium sm:px-2.5 sm:py-1 sm:text-[10px] whitespace-nowrap ${status.badgeClass}`}
           >
-            <StatusIcon size={10} weight="fill" className="sm:w-3 sm:h-3" />
+            <StatusIcon size={10} weight="fill" />
             <span>{law.status}</span>
           </Badge>
           {/* Upvote button - quadrado/retangular */}
@@ -90,7 +90,7 @@ export function LawCard({ law }: LawCardProps) {
               variant="secondary"
               className="gap-1 rounded-full border border-foreground/10 bg-muted/50 px-2.5 py-1 text-xs font-normal text-muted-foreground sm:py-0.5 sm:text-[10px]"
             >
-              {TopicIcon && <TopicIcon weight="regular" className="h-3.5 w-3.5 sm:h-3 sm:w-3" />}
+              {TopicIcon && <TopicIcon weight="regular" />}
               <span>{topic}</span>
             </Badge>
           );
