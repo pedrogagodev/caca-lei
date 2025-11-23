@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   MagnifyingGlass,
   BookOpen,
-  Clock,
-  TrendUp,
 } from "@phosphor-icons/react";
 import {
   CommandDialog,
@@ -15,46 +13,9 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from "@/components/ui/command";
-
-// Mock data - replace with real data from your API/database
-const mockLaws = [
-  {
-    id: "1",
-    number: "Lei 13.709/2018",
-    title: "Lei Geral de Proteção de Dados (LGPD)",
-    category: "Privacidade",
-  },
-  {
-    id: "2",
-    number: "Lei 12.965/2014",
-    title: "Marco Civil da Internet",
-    category: "Internet",
-  },
-  {
-    id: "3",
-    number: "Lei 8.078/1990",
-    title: "Código de Defesa do Consumidor",
-    category: "Consumidor",
-  },
-  {
-    id: "4",
-    number: "Lei 9.610/1998",
-    title: "Lei de Direitos Autorais",
-    category: "Propriedade Intelectual",
-  },
-];
-
-const recentSearches = [
-  { id: "r1", query: "LGPD", timestamp: "2 horas atrás" },
-  { id: "r2", query: "Marco Civil", timestamp: "1 dia atrás" },
-];
-
-const trendingSearches = [
-  { id: "t1", query: "reforma tributária", count: 245 },
-  { id: "t2", query: "direito digital", count: 189 },
-];
+import { searchBills } from "@/app/actions/bills";
+import type { Bill } from "@/types/database.types";
 
 interface SearchCommandPaletteProps {
   open?: boolean;
@@ -68,6 +29,8 @@ export function SearchCommandPalette({
   const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [results, setResults] = useState<Bill[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Use controlled or uncontrolled state
   const isControlled = controlledOpen !== undefined;
@@ -87,20 +50,37 @@ export function SearchCommandPalette({
     return () => document.removeEventListener("keydown", down);
   }, [setOpen, open]);
 
+  // Debounced search effect
+  useEffect(() => {
+    if (!search || search.trim().length < 2) {
+      setResults([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const bills = await searchBills(search);
+        setResults(bills);
+      } catch (error) {
+        console.error("Error searching bills:", error);
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [search]);
+
   const handleSelect = useCallback(
     (callback: () => void) => {
       setOpen(false);
       callback();
     },
     [setOpen],
-  );
-
-  const filteredLaws = mockLaws.filter(
-    (law) =>
-      search === "" ||
-      law.title.toLowerCase().includes(search.toLowerCase()) ||
-      law.number.toLowerCase().includes(search.toLowerCase()) ||
-      law.category.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -113,7 +93,7 @@ export function SearchCommandPalette({
         aria-label="Abrir busca"
       />
 
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
         <CommandInput
           placeholder="Busque por tema, número ou palavra-chave…"
           value={search}
@@ -121,6 +101,7 @@ export function SearchCommandPalette({
           className="h-14 border-none text-base focus:ring-0"
         />
         <CommandList className="max-h-[400px] scroll-py-2">
+          {/* Show different messages based on state */}
           <CommandEmpty className="py-12 text-center">
             <div className="mx-auto flex max-w-xs flex-col items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
@@ -132,13 +113,21 @@ export function SearchCommandPalette({
               </div>
               <div className="space-y-1">
                 <p className="text-sm font-medium text-foreground">
-                  Nenhum resultado encontrado
+                  {search.trim().length < 2
+                    ? "Comece a digitar para buscar"
+                    : isLoading
+                      ? "Buscando..."
+                      : "Nenhum resultado encontrado"}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Tente buscar por outro termo ou palavra-chave
+                  {search.trim().length < 2
+                    ? "Digite pelo menos 2 caracteres para buscar leis"
+                    : isLoading
+                      ? "Aguarde enquanto buscamos as leis"
+                      : "Tente buscar por outro termo ou palavra-chave"}
                 </p>
               </div>
-              {search && (
+              {search && search.trim().length >= 2 && !isLoading && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
@@ -150,91 +139,16 @@ export function SearchCommandPalette({
             </div>
           </CommandEmpty>
 
-          {/* Recent Searches */}
-          {search === "" && recentSearches.length > 0 && (
-            <>
-              <CommandGroup heading="Buscas Recentes">
-                {recentSearches.map((item, index) => (
-                  <CommandItem
-                    key={item.id}
-                    onSelect={() =>
-                      handleSelect(() => {
-                        setSearch(item.query);
-                      })
-                    }
-                    style={{
-                      animationDelay: `${index * 30}ms`,
-                      animationFillMode: "backwards",
-                    }}
-                    className="group cursor-pointer gap-2.5 rounded-lg px-3 py-2.5 transition-all duration-200 data-[selected=true]:bg-accent/60 hover:bg-accent/40 animate-in fade-in slide-in-from-bottom-1"
-                  >
-                    <Clock
-                      size={16}
-                      weight="regular"
-                      className="shrink-0 text-muted-foreground/60 transition-all duration-200 group-hover:scale-110 group-hover:text-primary group-data-[selected=true]:text-primary"
-                    />
-                    <div className="flex flex-1 items-center justify-between">
-                      <span className="text-sm font-medium transition-colors duration-200 group-hover:text-foreground">
-                        {item.query}
-                      </span>
-                      <span className="text-[11px] text-foreground/50 opacity-60 transition-opacity duration-200 group-hover:opacity-100">
-                        {item.timestamp}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandSeparator className="my-2 bg-gradient-to-r from-transparent via-border to-transparent" />
-            </>
-          )}
-
-          {/* Trending Searches */}
-          {search === "" && trendingSearches.length > 0 && (
-            <>
-              <CommandGroup heading="Em Alta">
-                {trendingSearches.map((item, index) => (
-                  <CommandItem
-                    key={item.id}
-                    onSelect={() =>
-                      handleSelect(() => {
-                        setSearch(item.query);
-                      })
-                    }
-                    style={{
-                      animationDelay: `${index * 30}ms`,
-                      animationFillMode: "backwards",
-                    }}
-                    className="group cursor-pointer gap-2.5 rounded-lg px-3 py-2.5 transition-all duration-200 data-[selected=true]:bg-accent/60 hover:bg-accent/40 animate-in fade-in slide-in-from-bottom-1"
-                  >
-                    <TrendUp
-                      size={16}
-                      weight="regular"
-                      className="shrink-0 text-muted-foreground/60 transition-all duration-200 group-hover:scale-110 group-hover:text-amber-500 group-data-[selected=true]:text-amber-500"
-                    />
-                    <div className="flex flex-1 items-center justify-between">
-                      <span className="text-sm font-medium transition-colors duration-200 group-hover:text-foreground">
-                        {item.query}
-                      </span>
-                      <span className="min-w-[2rem] rounded-full bg-muted px-2 py-0.5 text-center text-xs font-medium tabular-nums text-muted-foreground transition-all duration-200 group-hover:scale-105 group-hover:bg-primary/10 group-hover:text-primary">
-                        {item.count}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandSeparator className="my-2 bg-gradient-to-r from-transparent via-border to-transparent" />
-            </>
-          )}
-
-          {/* Law Results */}
-          {filteredLaws.length > 0 && (
-            <CommandGroup heading="Leis">
-              {filteredLaws.map((law, index) => (
+          {/* Search Results */}
+          {!isLoading && results.length > 0 && (
+            <CommandGroup heading="Resultados">
+              {results.map((bill, index) => (
                 <CommandItem
-                  key={law.id}
+                  key={bill.id}
+                  value={bill.id}
                   onSelect={() =>
                     handleSelect(() => {
-                      router.push(`/leis/${law.id}`);
+                      router.push(`/leis/${bill.id}`);
                     })
                   }
                   style={{
@@ -253,14 +167,16 @@ export function SearchCommandPalette({
                   </div>
                   <div className="flex flex-1 flex-col gap-1">
                     <span className="font-mono text-[11px] font-semibold uppercase tracking-wider tabular-nums text-muted-foreground transition-colors duration-150 group-hover:text-primary">
-                      {law.number}
+                      {bill.code}
                     </span>
                     <span className="text-sm font-medium leading-tight tracking-tight text-foreground transition-colors duration-150">
-                      {law.title}
+                      {bill.title}
                     </span>
-                    <span className="mt-0.5 w-fit rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground transition-all duration-150 group-hover:bg-primary/10 group-hover:text-primary">
-                      {law.category}
-                    </span>
+                    {bill.tags && bill.tags.length > 0 && (
+                      <span className="mt-0.5 w-fit rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground transition-all duration-150 group-hover:bg-primary/10 group-hover:text-primary">
+                        {bill.tags[0]}
+                      </span>
+                    )}
                   </div>
                   <MagnifyingGlass
                     size={16}

@@ -38,7 +38,7 @@ const LawListCard = React.forwardRef<
         ref={ref}
         className={cn(
           "group relative isolate grid items-start gap-3 sm:gap-4 md:gap-6 overflow-hidden rounded-2xl border border-foreground/10 bg-card p-4 sm:p-6 md:p-8 text-card-foreground transition-all duration-200 ease-out w-full max-w-full",
-          "hover:-translate-y-[2px] hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2",
+          "hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2",
           columns,
           className,
         )}
@@ -48,7 +48,7 @@ const LawListCard = React.forwardRef<
           <div
             data-slot="law-card-leading"
             className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 bg-muted/30 text-[10px] font-medium uppercase tracking-wide text-muted-foreground transition-transform duration-150 group-hover:-translate-y-[1px]",
+              "flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 bg-muted/30 text-[10px] font-medium uppercase tracking-wide text-muted-foreground transition-transform duration-150",
               leadingClassName,
             )}
           >
@@ -68,7 +68,7 @@ const LawListCard = React.forwardRef<
             data-slot="law-card-actions"
             className={cn(
               actionsColumn,
-              "row-span-full row-start-1 flex items-start gap-1.5 self-start justify-self-end text-muted-foreground transition-transform duration-150 group-hover:-translate-y-[1px] max-w-[80px] sm:max-w-none",
+              "row-span-full row-start-1 flex items-start gap-1.5 self-start justify-self-end text-muted-foreground transition-transform duration-150 max-w-[80px] sm:max-w-none",
               actionsClassName,
             )}
           >

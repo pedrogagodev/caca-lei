@@ -1,22 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { themes } from "@/constants/theme-data";
 
 interface MobileThemeSidebarProps {
   defaultTheme?: string;
   onThemeChange?: (theme: string) => void;
   activeTheme?: string;
 }
-
-const themes = [
-  { id: "all", label: "Todas", count: 247 },
-  { id: "transport", label: "Transporte", count: 54 },
-  { id: "health", label: "Saúde", count: 72 },
-  { id: "education", label: "Educação", count: 48 },
-  { id: "security", label: "Segurança", count: 31 },
-  { id: "privacy", label: "Dados & Privacidade", count: 28 },
-  { id: "environment", label: "Meio Ambiente", count: 14 },
-];
 
 export function MobileFilters({
   defaultTheme = "all",
@@ -52,18 +43,7 @@ export function MobileFilters({
                   : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:bg-muted/50 hover:text-foreground"
               }`}
             >
-              <span className="flex items-center gap-2">
-                {theme.label}
-                <span
-                  className={`rounded-full border px-2 py-0.5 text-sm font-semibold tabular-nums transition-colors duration-150 sm:text-xs ${
-                    isActive
-                      ? "border-primary/30 text-primary"
-                      : "border-border/50 text-muted-foreground group-hover:border-foreground/30"
-                  }`}
-                >
-                  {theme.count}
-                </span>
-              </span>
+              {theme.label}
             </button>
           );
         })}

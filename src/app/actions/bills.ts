@@ -142,20 +142,27 @@ export async function getBillComments(
       console.error("Error fetching replies:", repliesError);
     }
 
-    // Group replies by comment_id
+    // Group replies by comment_id and normalize author field
     const repliesByCommentId: Record<string, BillCommentReply[]> = {};
     if (replies) {
       for (const reply of replies) {
         if (!repliesByCommentId[reply.comment_id]) {
           repliesByCommentId[reply.comment_id] = [];
         }
-        repliesByCommentId[reply.comment_id].push(reply as BillCommentReply);
+        // Extract author from array (Supabase returns foreign keys as arrays)
+        const normalizedReply: BillCommentReply = {
+          ...reply,
+          author: Array.isArray(reply.author) ? reply.author[0] : reply.author,
+        } as BillCommentReply;
+        repliesByCommentId[reply.comment_id].push(normalizedReply);
       }
     }
 
-    // Combine comments with their replies
+    // Combine comments with their replies and normalize author field
     const commentsWithReplies: BillComment[] = comments.map((comment) => ({
       ...comment,
+      // Extract author from array (Supabase returns foreign keys as arrays)
+      author: Array.isArray(comment.author) ? comment.author[0] : comment.author,
       replies: repliesByCommentId[comment.id] || [],
     })) as BillComment[];
 
@@ -236,21 +243,106 @@ export async function incrementBillViews(billId: string): Promise<boolean> {
 
     if (error) {
       console.error("Error incrementing bill views:", error);
-      // Fallback to manual increment if RPC doesn't exist
-      const { error: updateError } = await supabase
-        .from("bills")
-        .update({ views: supabase.raw("views + 1") })
-        .eq("id", billId);
-
-      if (updateError) {
-        console.error("Error in fallback increment:", updateError);
-        return false;
-      }
+      return false;
     }
 
     return true;
   } catch (error) {
     console.error("Error in incrementBillViews:", error);
     return false;
+  }
+}
+
+// Normalize text so searches ignore accents/diacritics
+function normalizeText(text: string) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function billMatchesTerm(bill: Bill, normalizedTerm: string) {
+  const searchableFields = [
+    bill.title,
+    bill.code,
+    bill.summary || "",
+    bill.location,
+    bill.author,
+    ...(bill.tags || []),
+  ];
+
+  return searchableFields
+    .filter(Boolean)
+    .map((field) => normalizeText(String(field)))
+    .some((field) => field.includes(normalizedTerm));
+}
+
+/**
+ * Search bills by term (searches in title, code, tags, summary)
+ */
+export async function searchBills(searchTerm: string): Promise<Bill[]> {
+  const supabase = await createClient();
+
+  // Return empty if search term is empty or too short
+  if (!searchTerm || searchTerm.trim().length < 2) {
+    return [];
+  }
+
+  try {
+    const term = searchTerm.trim();
+    const normalizedTerm = normalizeText(term);
+
+    // Primary search with raw term (accent-sensitive)
+    const { data: primaryData, error: primaryError } = await supabase
+      .from("bills")
+      .select("*")
+      .or(
+        `title.ilike.%${term}%,code.ilike.%${term}%,summary.ilike.%${term}%`,
+      )
+      .order("views", { ascending: false })
+      .limit(50);
+
+    if (primaryError) {
+      console.error("Error searching bills:", primaryError);
+      return [];
+    }
+
+    // Accent-insensitive filtering across title/code/summary/tags/location/author
+    let results = ((primaryData as Bill[]) || []).filter((bill) =>
+      billMatchesTerm(bill, normalizedTerm),
+    );
+
+    // Fallback: broaden search to catch accentless/tag-only queries
+    if (results.length < 10) {
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from("bills")
+        .select("*")
+        .order("views", { ascending: false })
+        .limit(200);
+
+      if (fallbackError) {
+        console.error(
+          "Error fetching fallback bills for search:",
+          fallbackError,
+        );
+      } else {
+        const fallbackMatches = ((fallbackData as Bill[]) || []).filter(
+          (bill) => billMatchesTerm(bill, normalizedTerm),
+        );
+
+        const seenIds = new Set(results.map((bill) => bill.id));
+        for (const bill of fallbackMatches) {
+          if (seenIds.has(bill.id)) continue;
+          results.push(bill);
+          seenIds.add(bill.id);
+          if (results.length >= 10) break;
+        }
+      }
+    }
+
+    return results.slice(0, 10);
+  } catch (error) {
+    console.error("Error in searchBills:", error);
+    return [];
   }
 }

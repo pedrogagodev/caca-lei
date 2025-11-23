@@ -94,17 +94,7 @@ export function LawCard({ bill }: { bill: Bill }) {
     <LawListCard
       leading={undefined}
       actions={
-        <div className="flex items-center gap-2">
-          {/* Status badge - positioned with actions */}
-          <Badge
-            variant={status.variant}
-            className={`gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium ${status.badgeClass}`}
-          >
-            <StatusIcon size={12} weight="fill" />
-            <span>{bill.status}</span>
-          </Badge>
-          <UpvoteButton billId={bill.id} initialCount={supportPercentage} />
-        </div>
+        <UpvoteButton billId={bill.id} initialCount={supportPercentage} />
       }
     >
       {/* Block 1: Title (Maximum weight) */}

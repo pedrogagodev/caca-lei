@@ -38,7 +38,7 @@ export function SidebarFilters({
               key={theme.id}
               type="button"
               onClick={() => handleThemeClick(theme.id)}
-              className={`group relative flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
+              className={`group relative flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
                 isActive
                   ? "bg-background text-foreground shadow-sm ring-1 ring-border"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -51,17 +51,6 @@ export function SidebarFilters({
 
               {/* Label */}
               <span className="flex-1 text-left">{theme.label}</span>
-
-              {/* Count badge */}
-              <span
-                className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors duration-150 ${
-                  isActive
-                    ? "border-primary/30 text-primary"
-                    : "border-border/50 text-muted-foreground group-hover:border-foreground/30 group-hover:text-foreground"
-                }`}
-              >
-                {theme.count}
-              </span>
             </button>
           );
         })}
