@@ -17,7 +17,7 @@ export function ProposicaoCard({ proposicao }: ProposicaoCardProps) {
   const ementa = proposicao.ementa || "";
   const isTruncated = ementa.length > maxLength;
   const truncatedEmenta = isTruncated
-    ? ementa.slice(0, maxLength).trim() + "…"
+    ? `${ementa.slice(0, maxLength).trim()}…`
     : ementa;
 
   return (
