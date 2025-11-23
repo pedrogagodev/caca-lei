@@ -8,6 +8,7 @@ export interface Bill {
   location: string;
   author: string;
   summary: string | null;
+  didactic_summary: string | null;
   tags: string[];
   comments_count: number;
   supports_count: number;

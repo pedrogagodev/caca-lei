@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { LawContent } from "./_components/law-content";
 import { VideoSidebar } from "./_components/video-sidebar";
-import { getBillById } from "@/app/actions/bills";
+import { getBillById, updateBillSummaries } from "@/app/actions/bills";
 import { getBillComments } from "@/app/actions/comments";
+import { extractTextFromPdfUrl } from "@/lib/pdf-parser";
+import { generateSummaryFromText, generateDidacticSummaryFromText } from "@/lib/gemini-summarizer";
 
 // Temporary video URL - replace with actual video source
 const videoSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4";
@@ -27,6 +29,39 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
     notFound();
   }
 
+  let summary = billData.summary || "Resumo não disponível.";
+  let didacticSummary = billData.didactic_summary || null;
+  
+  if (billData.pdf_url) {
+    const pdfText = await extractTextFromPdfUrl(billData.pdf_url);
+    if (pdfText) {
+      // Generate both summaries in parallel
+      const [geminiSummary, geminiDidacticSummary] = await Promise.all([
+        generateSummaryFromText(pdfText),
+        generateDidacticSummaryFromText(pdfText),
+      ]);
+      
+      if (geminiSummary) {
+        summary = geminiSummary;
+      }
+      
+      if (geminiDidacticSummary) {
+        didacticSummary = geminiDidacticSummary;
+      }
+      
+      // Save generated summaries to database (fire and forget)
+      if (geminiSummary || geminiDidacticSummary) {
+        updateBillSummaries(
+          billData.id,
+          geminiSummary || summary,
+          geminiDidacticSummary || didacticSummary,
+        ).catch((error) => {
+          console.error("Failed to save summaries to database:", error);
+        });
+      }
+    }
+  }
+
   // Transform bill data to match component props
   const law = {
     id: billData.id,
@@ -38,8 +73,6 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
     author: billData.author,
     tags: billData.tags,
   };
-
-  const summary = billData.summary || "Resumo não disponível.";
 
   const engagementMetrics = {
     comments: billData.comments_count,
