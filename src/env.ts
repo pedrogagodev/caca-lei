@@ -12,3 +12,14 @@ export function getSupabaseEnv() {
   }
 }
 
+export function getCamaraEnv() {
+  const url = process.env.NEXT_PUBLIC_CAMARA_API_URL
+
+  if (!url) {
+    throw new Error(`Missing Camara API environment variables. Please check your .env file.`)
+  }
+
+  return {
+    url,
+  }
+}
