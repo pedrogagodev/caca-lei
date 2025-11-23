@@ -28,14 +28,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="overflow-x-hidden">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg-body text-text-primary`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-bg-body text-text-primary overflow-x-hidden`}
       >
         <NuqsAdapter>
           <AuthProvider>
             <Navbar />
-            <main id="main-content">{children}</main>
+            <main id="main-content" className="w-full overflow-x-hidden">{children}</main>
             <Toaster />
           </AuthProvider>
         </NuqsAdapter>

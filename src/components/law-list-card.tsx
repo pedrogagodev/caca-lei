@@ -29,15 +29,15 @@ const LawListCard = React.forwardRef<
   ) => {
     const hasLeading = Boolean(leading);
     const columns = hasLeading
-      ? "grid-cols-[auto_minmax(0,1fr)_auto]"
-      : "grid-cols-[minmax(0,1fr)_auto]";
+      ? "grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[auto_minmax(0,1fr)_auto]"
+      : "grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_auto]";
     const actionsColumn = hasLeading ? "col-start-3" : "col-start-2";
 
     return (
       <article
         ref={ref}
         className={cn(
-          "group relative isolate grid items-start gap-6 overflow-hidden rounded-2xl border border-foreground/10 bg-card p-8 text-card-foreground transition-all duration-200 ease-out md:p-6",
+          "group relative isolate grid items-start gap-3 sm:gap-4 md:gap-6 overflow-hidden rounded-2xl border border-foreground/10 bg-card p-4 sm:p-6 md:p-8 text-card-foreground transition-all duration-200 ease-out w-full max-w-full",
           "hover:-translate-y-[2px] hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2",
           columns,
           className,
@@ -58,7 +58,7 @@ const LawListCard = React.forwardRef<
 
         <div
           data-slot="law-card-content"
-          className={cn("min-w-0 space-y-4", contentClassName)}
+          className={cn("min-w-0 space-y-2.5 sm:space-y-3 md:space-y-4", contentClassName)}
         >
           {children}
         </div>
@@ -68,7 +68,7 @@ const LawListCard = React.forwardRef<
             data-slot="law-card-actions"
             className={cn(
               actionsColumn,
-              "row-span-full row-start-1 flex items-start gap-1.5 self-start justify-self-end text-muted-foreground transition-transform duration-150 group-hover:-translate-y-[1px]",
+              "row-span-full row-start-1 flex items-start gap-1.5 self-start justify-self-end text-muted-foreground transition-transform duration-150 group-hover:-translate-y-[1px] max-w-[80px] sm:max-w-none",
               actionsClassName,
             )}
           >

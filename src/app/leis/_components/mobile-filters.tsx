@@ -35,8 +35,9 @@ export function MobileFilters({
   };
 
   return (
-    <div className="overflow-x-auto pb-2 scrollbar-none">
-      <div className="flex gap-2">
+    <div className="relative w-full">
+      <div className="overflow-x-auto overflow-y-visible pb-2 scrollbar-none px-4">
+        <div className="inline-flex gap-2">
         {themes.map((theme) => {
           const isActive = activeTheme === theme.id;
 
@@ -45,7 +46,7 @@ export function MobileFilters({
               key={theme.id}
               type="button"
               onClick={() => handleThemeClick(theme.id)}
-              className={`group shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition-all duration-150 ${
+              className={`group shrink-0 whitespace-nowrap rounded-full border px-4 py-2.5 text-base font-medium transition-all duration-150 min-h-[44px] sm:min-h-auto sm:py-2 sm:text-sm ${
                 isActive
                   ? "border-primary/20 bg-primary/10 text-primary shadow-sm"
                   : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:bg-muted/50 hover:text-foreground"
@@ -54,7 +55,7 @@ export function MobileFilters({
               <span className="flex items-center gap-2">
                 {theme.label}
                 <span
-                  className={`rounded-full border px-2 py-0.5 text-xs font-semibold tabular-nums transition-colors duration-150 ${
+                  className={`rounded-full border px-2 py-0.5 text-sm font-semibold tabular-nums transition-colors duration-150 sm:text-xs ${
                     isActive
                       ? "border-primary/30 text-primary"
                       : "border-border/50 text-muted-foreground group-hover:border-foreground/30"
@@ -66,7 +67,11 @@ export function MobileFilters({
             </button>
           );
         })}
+        </div>
       </div>
+
+      {/* Gradient fade indicator for scrollable content */}
+      <div className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-background to-transparent sm:hidden" />
 
       <style jsx>{`
         .scrollbar-none::-webkit-scrollbar {

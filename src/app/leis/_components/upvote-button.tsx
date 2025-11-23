@@ -19,10 +19,10 @@ export function UpvoteButton({
       variant={active ? "default" : "outline"}
       size="sm"
       onClick={onClick}
-      className="h-16 w-20 flex-col gap-1 rounded-lg border-foreground/10 p-2 text-xs font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
+      className="h-16 w-16 sm:w-20 flex-col gap-1 rounded-lg border-foreground/10 p-2 text-xs font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
     >
-      <ThumbsUp size={20} weight={active ? "fill" : "regular"} />
-      <span className="tabular-nums">{count}%</span>
+      <ThumbsUp size={18} weight={active ? "fill" : "regular"} className="sm:w-5 sm:h-5" />
+      <span className="tabular-nums text-[10px] sm:text-xs">{count}%</span>
     </Button>
   );
 }
