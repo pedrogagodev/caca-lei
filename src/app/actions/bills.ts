@@ -29,6 +29,7 @@ async function upsertBill(
           location: bill.location,
           author: bill.author,
           summary: bill.summary,
+          didactic_summary: bill.didactic_summary,
           tags: bill.tags,
           created_at: bill.created_at,
           updated_at: bill.updated_at || new Date().toISOString(),
@@ -307,4 +308,33 @@ export async function getAllBills(options?: {
 
 export async function loadMoreBills(offset: number): Promise<Bill[]> {
   return getAllBills({ offset, limit: 5 });
+}
+
+export async function updateBillSummaries(
+  billId: number,
+  summary: string | null,
+  didacticSummary: string | null,
+): Promise<boolean> {
+  const supabase = await createClient();
+
+  try {
+    const { error } = await supabase
+      .from("bills")
+      .update({
+        summary,
+        didactic_summary: didacticSummary,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", billId);
+
+    if (error) {
+      console.error("Error updating bill summaries:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in updateBillSummaries:", error);
+    return false;
+  }
 }
