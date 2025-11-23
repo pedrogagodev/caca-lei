@@ -14,7 +14,25 @@ const law = {
 };
 
 const summary =
-  "Piloto de tarifa zero nos fins de semana em linhas troncais e perimetrais, com metas de inclusão e métricas de engajamento cidadão.";
+  "Este projeto de lei institui um programa piloto de tarifa zero no transporte público municipal aos fins de semana, focando inicialmente nas linhas troncais e perimetrais. A proposta visa democratizar o acesso ao transporte, promover inclusão social e avaliar a viabilidade de expansão futura do programa para outros dias da semana e regiões da cidade.";
+
+const keyPoints = [
+  "Tarifa zero aos fins de semana em 42 linhas troncais",
+  "Programa piloto de 12 meses com avaliação trimestral",
+  "Investimento de R$ 2,5 milhões/mês",
+  "Prioridade para periferias e regiões com menor acesso"
+];
+
+const details = {
+  objective:
+    "Reduzir a desigualdade no acesso ao transporte público, permitindo que famílias de baixa renda possam se deslocar aos fins de semana sem o peso financeiro das passagens.",
+  howItWorks:
+    "O programa será implementado em fases. Primeira etapa: tarifa zero apenas aos sábados (meses 1-3). Segunda etapa: extensão para domingos (meses 4-6). A fiscalização usa o sistema de bilhetagem eletrônica existente para registro e análise de dados.",
+  whoIsImpacted:
+    "Aproximadamente 450 mil pessoas serão beneficiadas, principalmente famílias de baixa renda que atualmente limitam deslocamentos aos fins de semana. Comerciantes locais também podem se beneficiar do aumento de circulação.",
+  nextSteps:
+    "Atualmente em discussão na Comissão de Transportes. Audiências públicas previstas para fevereiro de 2025, seguidas de votação. Se aprovado, implementação em abril de 2025."
+};
 
 // Engagement metrics
 const engagementMetrics = {
@@ -178,6 +196,8 @@ export default function LawDetailPage() {
           <LawContent
             law={law}
             summary={summary}
+            keyPoints={keyPoints}
+            details={details}
             engagementMetrics={engagementMetrics}
             reactionCounts={reactionCounts}
             relatedBills={relatedBills}

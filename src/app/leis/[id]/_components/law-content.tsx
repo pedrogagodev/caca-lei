@@ -48,6 +48,13 @@ interface LawContentProps {
     author: string;
   };
   summary: string;
+  keyPoints?: string[];
+  details?: {
+    objective?: string;
+    howItWorks?: string;
+    whoIsImpacted?: string;
+    nextSteps?: string;
+  };
   engagementMetrics: {
     views: number;
     comments: number;
@@ -95,6 +102,8 @@ interface LawContentProps {
 export function LawContent({
   law,
   summary,
+  keyPoints = [],
+  details,
   engagementMetrics,
   reactionCounts,
   relatedBills,
@@ -168,7 +177,7 @@ export function LawContent({
       <QuickActions />
 
       {/* 6. Summary Card */}
-      <LawSummaryCard summary={summary} keyPoints={[]} />
+      <LawSummaryCard summary={summary} keyPoints={keyPoints} details={details} />
 
       {/* 7. Comments Section */}
       <CommentsSection comments={comments} totalComments={totalComments} />
