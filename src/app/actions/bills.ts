@@ -167,6 +167,63 @@ export async function getBillComments(
 }
 
 /**
+ * Fetch all bills with optional filtering and sorting
+ */
+export async function getAllBills(options?: {
+  limit?: number;
+  offset?: number;
+  status?: string;
+  location?: string;
+  tags?: string[];
+}): Promise<Bill[]> {
+  const supabase = await createClient();
+
+  try {
+    let query = supabase
+      .from("bills")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    // Apply filters if provided
+    if (options?.status) {
+      query = query.eq("status", options.status);
+    }
+
+    if (options?.location) {
+      query = query.eq("location", options.location);
+    }
+
+    if (options?.tags && options.tags.length > 0) {
+      query = query.contains("tags", options.tags);
+    }
+
+    // Apply pagination
+    if (options?.limit) {
+      query = query.limit(options.limit);
+    }
+
+    if (options?.offset) {
+      query = query.range(
+        options.offset,
+        options.offset + (options.limit || 10) - 1,
+      );
+    }
+
+    const { data: bills, error } = await query;
+
+    if (error) {
+      console.error("Error fetching bills:", error);
+      return [];
+    }
+
+    return (bills as Bill[]) || [];
+  } catch (error) {
+    console.error("Error in getAllBills:", error);
+    return [];
+  }
+}
+
+/**
  * Increment the view count for a bill
  */
 export async function incrementBillViews(billId: string): Promise<boolean> {
