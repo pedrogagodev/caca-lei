@@ -7,12 +7,53 @@ import type {
   BillCommentReply,
   BillWithDetails,
   ReactionCounts,
+  ReactionType,
 } from "@/types/database.types";
 import {
   fetchProposicoes,
   fetchProposicaoById,
   transformProposicaoToBill,
 } from "@/lib/camara-api";
+
+
+async function upsertBill(
+  bill: Omit<Bill, "comments_count" | "supports_count">,
+): Promise<boolean> {
+  const supabase = await createClient();
+
+  try {
+    const { error } = await supabase
+      .from("bills")
+      .upsert(
+        {
+          id: bill.id,
+          title: bill.title,
+          code: bill.code,
+          status: bill.status,
+          location: bill.location,
+          author: bill.author,
+          summary: bill.summary,
+          tags: bill.tags,
+          created_at: bill.created_at,
+          updated_at: bill.updated_at || new Date().toISOString(),
+          pdf_url: bill.pdf_url,
+        },
+        {
+          onConflict: "id",
+        },
+      );
+
+    if (error) {
+      console.error("Error upserting bill:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in upsertBill:", error);
+    return false;
+  }
+}
 
 /**
  * Fetch a single bill by ID with reaction counts and related bills
@@ -33,6 +74,9 @@ export async function getBillById(id: string): Promise<BillWithDetails | null> {
     const proposicao = await fetchProposicaoById(billId);
     if (proposicao) {
       bill = transformProposicaoToBill(proposicao);
+      upsertBill(bill).catch((error: unknown) => {
+        console.error("Failed to save bill to database:", error);
+      });
     }
 
     if (!bill) {
@@ -372,6 +416,81 @@ export async function getAllBills(options?: {
   } catch (error) {
     console.error("Error in getAllBills:", error);
     return [];
+  }
+}
+
+export async function saveBillReaction(
+  billId: number,
+  reactionType: ReactionType,
+): Promise<boolean> {
+  const supabase = await createClient();
+
+  try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("User not authenticated:", userError);
+      return false;
+    }
+
+    const { error } = await supabase
+      .from("bill_reactions")
+      .upsert(
+        {
+          bill_id: billId,
+          user_id: user.id,
+          type: reactionType,
+        },
+        {
+          onConflict: "bill_id,user_id",
+        },
+      );
+
+    if (error) {
+      console.error("Error saving reaction:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in saveBillReaction:", error);
+    return false;
+  }
+}
+
+
+export async function removeBillReaction(billId: number): Promise<boolean> {
+  const supabase = await createClient();
+
+  try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("User not authenticated:", userError);
+      return false;
+    }
+
+    const { error } = await supabase
+      .from("bill_reactions")
+      .delete()
+      .eq("bill_id", billId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error removing reaction:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in removeBillReaction:", error);
+    return false;
   }
 }
 
