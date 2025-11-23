@@ -419,6 +419,10 @@ export async function getAllBills(options?: {
   }
 }
 
+export async function loadMoreBills(offset: number): Promise<Bill[]> {
+  return getAllBills({ offset, limit: 5 });
+}
+
 export async function saveBillReaction(
   billId: number,
   reactionType: ReactionType,
