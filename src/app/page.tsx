@@ -141,7 +141,7 @@ function UpvoteButton({ count, active, onClick }: { count: number; active?: bool
       variant={active ? "default" : "outline"}
       size="sm"
       onClick={onClick}
-      className="h-10 gap-2 rounded-full border-foreground/10 px-4 text-sm font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
+      className="h-11 min-w-[100px] gap-2 rounded-lg border-foreground/10 px-6 text-sm font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
     >
       <ThumbsUp
         size={18}
@@ -189,7 +189,7 @@ function LawCard({ law }: { law: Law }) {
     <LawListCard
       leading={undefined}
       actions={
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-end gap-2">
           {/* Status badge - positioned with actions */}
           <Badge
             variant={status.variant}
@@ -272,9 +272,9 @@ function SkeletonCard() {
     <LawListCard
       leading={undefined}
       actions={
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col items-end gap-2">
           <Skeleton className="h-7 w-24 rounded-full" />
-          <Skeleton className="h-10 w-20 rounded-full" />
+          <Skeleton className="h-11 w-[100px] rounded-lg" />
         </div>
       }
     >
@@ -328,19 +328,19 @@ export default function Home() {
                 <LawCard law={law} />
               </Link>
             ))}
-            <SkeletonCard />
-            <SkeletonCard />
           </div>
 
-          <Card className="flex flex-col items-center gap-3 px-6 py-10 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-              <Shield size={32} weight="regular" className="text-muted-foreground" />
-            </div>
-            <p className="text-lg font-semibold">Nenhuma lei encontrada</p>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Ajuste os filtros acima ou refine sua busca para encontrar leis relevantes.
-            </p>
-          </Card>
+          {laws.length === 0 && (
+            <Card className="flex flex-col items-center gap-3 px-6 py-10 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <Shield size={32} weight="regular" className="text-muted-foreground" />
+              </div>
+              <p className="text-lg font-semibold">Nenhuma lei encontrada</p>
+              <p className="max-w-md text-sm text-muted-foreground">
+                Ajuste os filtros acima ou refine sua busca para encontrar leis relevantes.
+              </p>
+            </Card>
+          )}
         </section>
       </div>
     </div>
