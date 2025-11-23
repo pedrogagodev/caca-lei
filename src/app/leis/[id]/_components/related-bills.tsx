@@ -2,27 +2,8 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "./status-badge";
-import {
-  ArrowRight,
-  Bus,
-  Heart,
-  RoadHorizon,
-  FirstAid,
-  Briefcase,
-  GraduationCap,
-  LockKey,
-} from "@phosphor-icons/react/dist/ssr";
-
-// Topic icon mapping (matching the listing page)
-const topicIcons: Record<string, typeof Bus> = {
-  Transporte: Bus,
-  Inclusão: Heart,
-  Mobilidade: RoadHorizon,
-  Saúde: FirstAid,
-  "Serviço Público": Briefcase,
-  Educação: GraduationCap,
-  Privacidade: LockKey,
-};
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { topicIcons } from "@/constants/topic-icons";
 
 interface RelatedBill {
   id: string;
@@ -49,17 +30,15 @@ export function RelatedBills({ bills }: RelatedBillsProps) {
         <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">
           Projetos relacionados
         </p>
-        <h2 className="text-xl font-semibold">Você também pode se interessar</h2>
+        <h2 className="text-xl font-semibold">
+          Você também pode se interessar
+        </h2>
       </div>
 
       {/* Bills Grid */}
       <div className="grid gap-4 md:grid-cols-2">
         {bills.map((bill) => (
-          <Link
-            key={bill.id}
-            href={`/leis/${bill.id}`}
-            className="group block"
-          >
+          <Link key={bill.id} href={`/leis/${bill.id}`} className="group block">
             <Card className="h-full border border-border bg-card p-4 transition-all duration-200 hover:scale-[1.02] hover:border-primary/50 hover:shadow-md active:scale-[0.98]">
               {/* Status & Tags */}
               <div className="mb-3 flex flex-wrap items-center gap-1.5">

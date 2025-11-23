@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -9,15 +11,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-  Bus,
-  Heart,
-  RoadHorizon,
-  FirstAid,
-  Briefcase,
-  GraduationCap,
-  LockKey,
-} from "@phosphor-icons/react/dist/ssr";
 import { StatusBadge } from "./status-badge";
 import { LawSummaryCard } from "./law-summary-card";
 import { QuickActions } from "./quick-actions";
@@ -25,17 +18,7 @@ import { SocialProofMetrics } from "./social-proof-metrics";
 import { ReactionButtons } from "./reaction-buttons";
 import { CommentsSection } from "./comments-section";
 import { RelatedBills } from "./related-bills";
-
-// Topic icon mapping (matching the listing page)
-const topicIcons: Record<string, typeof Bus> = {
-  Transporte: Bus,
-  Inclusão: Heart,
-  Mobilidade: RoadHorizon,
-  Saúde: FirstAid,
-  "Serviço Público": Briefcase,
-  Educação: GraduationCap,
-  Privacidade: LockKey,
-};
+import { topicIcons } from "@/constants/topic-icons";
 
 interface LawContentProps {
   law: {
@@ -177,7 +160,11 @@ export function LawContent({
       <QuickActions />
 
       {/* 6. Summary Card */}
-      <LawSummaryCard summary={summary} keyPoints={keyPoints} details={details} />
+      <LawSummaryCard
+        summary={summary}
+        keyPoints={keyPoints}
+        details={details}
+      />
 
       {/* 7. Comments Section */}
       <CommentsSection comments={comments} totalComments={totalComments} />

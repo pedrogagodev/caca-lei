@@ -2,22 +2,13 @@
 
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { themes } from "@/constants/theme-data";
 
 interface ThemeSidebarProps {
   defaultTheme?: string;
   onThemeChange?: (theme: string) => void;
   activeTheme?: string;
 }
-
-const themes = [
-  { id: "all", label: "Todas", count: 247 },
-  { id: "transport", label: "Transporte", count: 54 },
-  { id: "health", label: "Saúde", count: 72 },
-  { id: "education", label: "Educação", count: 48 },
-  { id: "security", label: "Segurança", count: 31 },
-  { id: "privacy", label: "Dados & Privacidade", count: 28 },
-  { id: "environment", label: "Meio Ambiente", count: 14 },
-];
 
 export function SidebarFilters({
   defaultTheme = "all",
