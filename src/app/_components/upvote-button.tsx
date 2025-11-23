@@ -5,7 +5,7 @@ import { ThumbsUp } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 
 interface UpvoteButtonProps {
-  billId: string;
+  billId: number;
   initialCount: number;
 }
 

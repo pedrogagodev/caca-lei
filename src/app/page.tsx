@@ -174,8 +174,7 @@ function SkeletonCard() {
 }
 
 export default async function Home() {
-  // Fetch bills from Supabase (server-side)
-  const bills = await getAllBills({ limit: 20 });
+  const bills = await getAllBills({ limit: 5 });
 
   return <HomeContent bills={bills} />;
 }

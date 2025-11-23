@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
   ThumbsUp,
@@ -9,6 +11,9 @@ import {
   Lightning,
 } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
+import { saveBillReaction, removeBillReaction } from "@/app/actions/bills";
+import type { ReactionType as ReactionTypeDB } from "@/types/database.types";
+import { useAuth } from "@/contexts/auth-context";
 
 type ReactionType = "apoio" | "nao-apoio" | "nao-entendi" | "impacta" | null;
 
@@ -20,6 +25,7 @@ interface Reaction {
 }
 
 interface ReactionButtonsProps {
+  billId: number;
   initialCounts?: {
     apoio: number;
     "nao-apoio": number;
@@ -80,16 +86,49 @@ const reactionStyles = {
   },
 } as const;
 
-export function ReactionButtons({ initialCounts }: ReactionButtonsProps = {}) {
+export function ReactionButtons({
+  billId,
+  initialCounts,
+}: ReactionButtonsProps) {
   const [selectedReaction, setSelectedReaction] = useState<ReactionType>(null);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user, loading } = useAuth();
 
   const reactions: Reaction[] = defaultReactions.map((reaction) => ({
     ...reaction,
     count: reaction.id ? (initialCounts?.[reaction.id] ?? 0) : 0,
   }));
 
+  const isAuthenticated = !!user;
+
   const handleReactionClick = (reactionId: ReactionType) => {
-    setSelectedReaction(selectedReaction === reactionId ? null : reactionId);
+    if (!isAuthenticated) {
+      router.push(`/login?redirectTo=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
+    const newReaction = selectedReaction === reactionId ? null : reactionId;
+
+    setSelectedReaction(newReaction);
+
+    startTransition(async () => {
+      if (newReaction) {
+        const success = await saveBillReaction(
+          billId,
+          newReaction as ReactionTypeDB,
+        );
+        if (success) {
+          router.refresh();
+        }
+      } else {
+        const success = await removeBillReaction(billId);
+        if (success) {
+          router.refresh();
+        }
+      }
+    });
   };
 
   return (
@@ -116,6 +155,7 @@ export function ReactionButtons({ initialCounts }: ReactionButtonsProps = {}) {
               onClick={() => handleReactionClick(reaction.id)}
               aria-pressed={isActive}
               aria-label={`${reaction.label}${displayCount > 0 ? ` (${displayCount} ${displayCount === 1 ? "pessoa" : "pessoas"})` : ""}`}
+              disabled={isPending || !isAuthenticated || loading}
               className={cn(
                 // Base structure
                 "relative flex flex-col items-center justify-center gap-1.5 px-3 py-3",
@@ -129,7 +169,9 @@ export function ReactionButtons({ initialCounts }: ReactionButtonsProps = {}) {
 
                 // Interactions
                 "transition-all duration-200 ease-out",
-                "hover:scale-[1.02] hover:border-foreground/20 hover:bg-muted/30",
+                !isAuthenticated || loading
+                  ? "cursor-not-allowed opacity-60"
+                  : "hover:scale-[1.02] hover:border-foreground/20 hover:bg-muted/30",
                 "active:scale-[0.98]",
 
                 // Focus (keyboard accessibility)
@@ -142,6 +184,8 @@ export function ReactionButtons({ initialCounts }: ReactionButtonsProps = {}) {
                 isActive && styles.border,
                 isActive && styles.bg,
                 isActive && styles.text,
+
+                isPending && "opacity-50 cursor-not-allowed"
               )}
             >
               {/* Icon */}
@@ -178,13 +222,32 @@ export function ReactionButtons({ initialCounts }: ReactionButtonsProps = {}) {
       </div>
 
       {/* Success Message */}
-      {selectedReaction && (
+      {selectedReaction && isAuthenticated && (
         <div
           role="status"
           aria-live="polite"
           className="text-center text-sm text-muted-foreground"
         >
           Sua opinião foi registrada. Obrigado por participar!
+        </div>
+      )}
+
+      {/* Not Authenticated Message */}
+      {!isAuthenticated && !loading && (
+        <div
+          role="alert"
+          className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-center text-sm text-amber-800 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-400"
+        >
+          <p>
+            Você precisa{" "}
+            <Link
+              href={`/login?redirectTo=${encodeURIComponent(pathname)}`}
+              className="font-semibold underline underline-offset-2 hover:text-amber-900 dark:hover:text-amber-300"
+            >
+              fazer login
+            </Link>{" "}
+            para reagir a esta lei.
+          </p>
         </div>
       )}
     </section>

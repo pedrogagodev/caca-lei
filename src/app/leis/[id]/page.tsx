@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { LawContent } from "./_components/law-content";
 import { VideoSidebar } from "./_components/video-sidebar";
-import { getBillById, getBillComments, incrementBillViews } from "@/app/actions/bills";
+import { getBillById, getBillComments } from "@/app/actions/bills";
 
 // Temporary video URL - replace with actual video source
 const videoSrc =
@@ -26,11 +26,6 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
   if (!billData) {
     notFound();
   }
-
-  // Increment view count (fire and forget)
-  incrementBillViews(id).catch((error) => {
-    console.error("Failed to increment views:", error);
-  });
 
   // Transform bill data to match component props
   const law = {
@@ -58,7 +53,6 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
   };
 
   const engagementMetrics = {
-    views: billData.views,
     comments: billData.comments_count,
     supports: billData.supports_count,
   };
@@ -67,7 +61,7 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
   const transformedComments = comments.map((comment) => ({
     id: comment.id,
     author: {
-      name: comment.author.name || "Usuário Anônimo",
+      name: comment.author.full_name || "Usuário Anônimo",
       avatar: comment.author.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.id}`,
     },
     text: comment.text,
@@ -76,7 +70,7 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
     replies: comment.replies.map((reply) => ({
       id: reply.id,
       author: {
-        name: reply.author.name || "Usuário Anônimo",
+        name: reply.author.full_name || "Usuário Anônimo",
         avatar: reply.author.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reply.id}`,
       },
       text: reply.text,

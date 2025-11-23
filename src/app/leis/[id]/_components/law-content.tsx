@@ -22,6 +22,7 @@ import { topicIcons } from "@/constants/topic-icons";
 
 interface LawContentProps {
   law: {
+    id: number;
     breadcrumb: string[];
     status: string;
     tags: string[];
@@ -39,7 +40,6 @@ interface LawContentProps {
     nextSteps?: string;
   };
   engagementMetrics: {
-    views: number;
     comments: number;
     supports: number;
   };
@@ -50,7 +50,7 @@ interface LawContentProps {
     impacta: number;
   };
   relatedBills: Array<{
-    id: string;
+    id: number;
     title: string;
     code: string;
     status: string;
@@ -148,13 +148,12 @@ export function LawContent({
 
       {/* 3. Social Proof Metrics */}
       <SocialProofMetrics
-        views={engagementMetrics.views}
         comments={engagementMetrics.comments}
         supports={engagementMetrics.supports}
       />
 
       {/* 4. Engagement Buttons (Reactions) */}
-      <ReactionButtons initialCounts={reactionCounts} />
+      <ReactionButtons billId={law.id} initialCounts={reactionCounts} />
 
       {/* 5. Quick Actions */}
       <QuickActions />

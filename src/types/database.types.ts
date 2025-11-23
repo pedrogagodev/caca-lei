@@ -1,7 +1,7 @@
 // Database entity types matching Supabase schema
 
 export interface Bill {
-  id: string;
+  id: number;
   title: string;
   code: string;
   status: string;
@@ -9,11 +9,11 @@ export interface Bill {
   author: string;
   summary: string | null;
   tags: string[];
-  views: number;
   comments_count: number;
   supports_count: number;
   created_at: string | null;
   updated_at: string | null;
+  pdf_url?: string | null; // URL to full bill PDF
 }
 
 export type ReactionType = "apoio" | "nao-apoio" | "nao-entendi" | "impacta";
@@ -28,7 +28,7 @@ export interface BillReaction {
 
 export interface Profile {
   id: string;
-  name: string | null;
+  full_name: string | null;
   avatar_url: string | null;
 }
 
@@ -62,7 +62,6 @@ export interface ReactionCounts {
 }
 
 export interface EngagementMetrics {
-  views: number;
   comments: number;
   supports: number;
 }
