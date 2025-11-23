@@ -492,3 +492,97 @@ export async function removeBillReaction(billId: number): Promise<boolean> {
     return false;
   }
 }
+
+// Normalize text so searches ignore accents/diacritics
+function normalizeText(text: string) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function billMatchesTerm(bill: Bill, normalizedTerm: string) {
+  const searchableFields = [
+    bill.title,
+    bill.code,
+    bill.summary || "",
+    bill.location,
+    bill.author,
+    ...(bill.tags || []),
+  ];
+
+  return searchableFields
+    .filter(Boolean)
+    .map((field) => normalizeText(String(field)))
+    .some((field) => field.includes(normalizedTerm));
+}
+
+/**
+ * Search bills by term (searches in title, code, tags, summary)
+ */
+export async function searchBills(searchTerm: string): Promise<Bill[]> {
+  const supabase = await createClient();
+
+  // Return empty if search term is empty or too short
+  if (!searchTerm || searchTerm.trim().length < 2) {
+    return [];
+  }
+
+  try {
+    const term = searchTerm.trim();
+    const normalizedTerm = normalizeText(term);
+
+    // Primary search with raw term (accent-sensitive)
+    const { data: primaryData, error: primaryError } = await supabase
+      .from("bills")
+      .select("*")
+      .or(
+        `title.ilike.%${term}%,code.ilike.%${term}%,summary.ilike.%${term}%`,
+      )
+      .order("views", { ascending: false })
+      .limit(50);
+
+    if (primaryError) {
+      console.error("Error searching bills:", primaryError);
+      return [];
+    }
+
+    // Accent-insensitive filtering across title/code/summary/tags/location/author
+    let results = ((primaryData as Bill[]) || []).filter((bill) =>
+      billMatchesTerm(bill, normalizedTerm),
+    );
+
+    // Fallback: broaden search to catch accentless/tag-only queries
+    if (results.length < 10) {
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from("bills")
+        .select("*")
+        .order("views", { ascending: false })
+        .limit(200);
+
+      if (fallbackError) {
+        console.error(
+          "Error fetching fallback bills for search:",
+          fallbackError,
+        );
+      } else {
+        const fallbackMatches = ((fallbackData as Bill[]) || []).filter(
+          (bill) => billMatchesTerm(bill, normalizedTerm),
+        );
+
+        const seenIds = new Set(results.map((bill) => bill.id));
+        for (const bill of fallbackMatches) {
+          if (seenIds.has(bill.id)) continue;
+          results.push(bill);
+          seenIds.add(bill.id);
+          if (results.length >= 10) break;
+        }
+      }
+    }
+
+    return results.slice(0, 10);
+  } catch (error) {
+    console.error("Error in searchBills:", error);
+    return [];
+  }
+}
