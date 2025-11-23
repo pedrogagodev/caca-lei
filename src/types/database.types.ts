@@ -40,6 +40,7 @@ export interface BillCommentReply {
   upvotes: number;
   created_at: string;
   author: Profile;
+  isUpvoted?: boolean;
 }
 
 export interface BillComment {
@@ -51,6 +52,7 @@ export interface BillComment {
   created_at: string;
   author: Profile;
   replies: BillCommentReply[];
+  isUpvoted?: boolean;
 }
 
 // Aggregated data types for the UI

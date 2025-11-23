@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { LawContent } from "./_components/law-content";
 import { VideoSidebar } from "./_components/video-sidebar";
-import { getBillById, getBillComments } from "@/app/actions/bills";
+import { getBillById } from "@/app/actions/bills";
+import { getBillComments } from "@/app/actions/comments";
 
 // Temporary video URL - replace with actual video source
 const videoSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4";
@@ -55,6 +56,7 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
     text: comment.text,
     timestamp: comment.created_at,
     upvotes: comment.upvotes,
+    isUpvoted: comment.isUpvoted || false,
     replies: comment.replies.map((reply) => ({
       id: reply.id,
       author: {
@@ -64,6 +66,7 @@ export default async function LawDetailPage({ params }: LawDetailPageProps) {
       text: reply.text,
       timestamp: reply.created_at,
       upvotes: reply.upvotes,
+      isUpvoted: reply.isUpvoted || false,
     })),
   }));
 
