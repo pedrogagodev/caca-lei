@@ -9,15 +9,19 @@ interface UpvoteButtonProps {
   onClick?: (e: React.MouseEvent) => void;
 }
 
-export function UpvoteButton({ count, active = false, onClick }: UpvoteButtonProps) {
+export function UpvoteButton({
+  count,
+  active = false,
+  onClick,
+}: UpvoteButtonProps) {
   return (
     <Button
       variant={active ? "default" : "outline"}
       size="sm"
       onClick={onClick}
-      className="h-10 gap-2 rounded-full border-foreground/10 px-4 text-sm font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
+      className="h-16 w-20 flex-col gap-1 rounded-lg border-foreground/10 p-2 text-xs font-semibold transition-all duration-200 hover:scale-105 hover:border-primary/40"
     >
-      <ThumbsUp size={18} weight={active ? "fill" : "regular"} />
+      <ThumbsUp size={20} weight={active ? "fill" : "regular"} />
       <span className="tabular-nums">{count}%</span>
     </Button>
   );
