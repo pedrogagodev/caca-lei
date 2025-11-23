@@ -166,7 +166,11 @@ export function LawContent({
       />
 
       {/* 7. Comments Section */}
-      <CommentsSection comments={comments} totalComments={totalComments} />
+      <CommentsSection
+        billId={law.id.toString()}
+        comments={comments}
+        totalComments={totalComments}
+      />
 
       {/* 8. Related Bills */}
       <RelatedBills bills={relatedBills} />

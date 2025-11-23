@@ -83,6 +83,7 @@ export function transformProposicaoToBill(proposicao: ProposicaoAPI): Omit<
     location: "Brasil", // Default location
     author: proposicao.siglaTipo, // Use siglaTipo as author placeholder
     summary: proposicao.ementa,
+    didactic_summary: null, // Will be generated from PDF if available
     tags: [proposicao.siglaTipo], // Use siglaTipo as tag
     created_at: proposicao.dataApresentacao,
     updated_at: proposicao.dataApresentacao,

@@ -7,14 +7,12 @@ import type {
   BillCommentReply,
   BillWithDetails,
   ReactionCounts,
-  ReactionType,
 } from "@/types/database.types";
 import {
   fetchProposicoes,
   fetchProposicaoById,
   transformProposicaoToBill,
 } from "@/lib/camara-api";
-
 
 async function upsertBill(
   bill: Omit<Bill, "comments_count" | "supports_count">,
@@ -33,6 +31,7 @@ async function upsertBill(
           location: bill.location,
           author: bill.author,
           summary: bill.summary,
+          didactic_summary: bill.didactic_summary,
           tags: bill.tags,
           created_at: bill.created_at,
           updated_at: bill.updated_at || new Date().toISOString(),
@@ -53,6 +52,77 @@ async function upsertBill(
     console.error("Error in upsertBill:", error);
     return false;
   }
+}
+
+async function fetchBillsEngagementData(
+  billIds: number[],
+): Promise<{
+  reactions: Record<number, ReactionCounts>;
+  commentsCount: Record<number, number>;
+  supportsCount: Record<number, number>;
+}> {
+  const supabase = await createClient();
+  const result = {
+    reactions: {} as Record<number, ReactionCounts>,
+    commentsCount: {} as Record<number, number>,
+    supportsCount: {} as Record<number, number>,
+  };
+
+  if (billIds.length === 0) {
+    return result;
+  }
+
+  try {
+    for (const billId of billIds) {
+      result.reactions[billId] = {
+        apoio: 0,
+        "nao-apoio": 0,
+        "nao-entendi": 0,
+        impacta: 0,
+      };
+      result.commentsCount[billId] = 0;
+      result.supportsCount[billId] = 0;
+    }
+
+    const { data: reactions, error: reactionsError } = await supabase
+      .from("bill_reactions")
+      .select("bill_id, type")
+      .in("bill_id", billIds);
+
+    if (!reactionsError && reactions) {
+      for (const reaction of reactions) {
+        const billId = reaction.bill_id;
+        if (billId && result.reactions[billId]) {
+          const type = reaction.type as keyof ReactionCounts;
+          if (type in result.reactions[billId]) {
+            result.reactions[billId][type]++;
+          }
+        }
+      }
+    }
+
+    const { data: comments, error: commentsError } = await supabase
+      .from("bill_comments")
+      .select("bill_id")
+      .in("bill_id", billIds);
+
+    if (!commentsError && comments) {
+      for (const comment of comments) {
+        const billId = comment.bill_id;
+        if (billId && result.commentsCount[billId] !== undefined) {
+          result.commentsCount[billId]++;
+        }
+      }
+    }
+
+    for (const billId of billIds) {
+      result.supportsCount[billId] = result.reactions[billId]?.apoio || 0;
+    }
+  } catch (error) {
+    console.error("Error fetching bills engagement data:", error);
+  }
+
+  return result;
 }
 
 /**
@@ -285,79 +355,6 @@ export async function getBillComments(
   }
 }
 
-
-async function fetchBillsEngagementData(
-  billIds: number[],
-): Promise<{
-  reactions: Record<number, ReactionCounts>;
-  commentsCount: Record<number, number>;
-  supportsCount: Record<number, number>;
-}> {
-  const supabase = await createClient();
-  const result = {
-    reactions: {} as Record<number, ReactionCounts>,
-    commentsCount: {} as Record<number, number>,
-    supportsCount: {} as Record<number, number>,
-  };
-
-  if (billIds.length === 0) {
-    return result;
-  }
-
-  try {
-    for (const billId of billIds) {
-      result.reactions[billId] = {
-        apoio: 0,
-        "nao-apoio": 0,
-        "nao-entendi": 0,
-        impacta: 0,
-      };
-      result.commentsCount[billId] = 0;
-      result.supportsCount[billId] = 0;
-    }
-
-    const { data: reactions, error: reactionsError } = await supabase
-      .from("bill_reactions")
-      .select("bill_id, type")
-      .in("bill_id", billIds);
-
-    if (!reactionsError && reactions) {
-      for (const reaction of reactions) {
-        const billId = reaction.bill_id;
-        if (billId && result.reactions[billId]) {
-          const type = reaction.type as keyof ReactionCounts;
-          if (type in result.reactions[billId]) {
-            result.reactions[billId][type]++;
-          }
-        }
-      }
-    }
-
-    const { data: comments, error: commentsError } = await supabase
-      .from("bill_comments")
-      .select("bill_id")
-      .in("bill_id", billIds);
-
-    if (!commentsError && comments) {
-      for (const comment of comments) {
-        const billId = comment.bill_id;
-        if (billId && result.commentsCount[billId] !== undefined) {
-          result.commentsCount[billId]++;
-        }
-      }
-    }
-
-    for (const billId of billIds) {
-      result.supportsCount[billId] = result.reactions[billId]?.apoio || 0;
-    }
-  } catch (error) {
-    console.error("Error fetching bills engagement data:", error);
-  }
-
-  return result;
-}
-
-
 export async function getAllBills(options?: {
   limit?: number;
   offset?: number;
@@ -419,44 +416,35 @@ export async function getAllBills(options?: {
   }
 }
 
-export async function saveBillReaction(
+export async function loadMoreBills(offset: number): Promise<Bill[]> {
+  return getAllBills({ offset, limit: 5 });
+}
+
+export async function updateBillSummaries(
   billId: number,
-  reactionType: ReactionType,
+  summary: string | null,
+  didacticSummary: string | null,
 ): Promise<boolean> {
   const supabase = await createClient();
 
   try {
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      console.error("User not authenticated:", userError);
-      return false;
-    }
-
     const { error } = await supabase
-      .from("bill_reactions")
-      .upsert(
-        {
-          bill_id: billId,
-          user_id: user.id,
-          type: reactionType,
-        },
-        {
-          onConflict: "bill_id,user_id",
-        },
-      );
+      .from("bills")
+      .update({
+        summary,
+        didactic_summary: didacticSummary,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", billId);
 
     if (error) {
-      console.error("Error saving reaction:", error);
+      console.error("Error updating bill summaries:", error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error("Error in saveBillReaction:", error);
+    console.error("Error in updateBillSummaries:", error);
     return false;
   }
 }

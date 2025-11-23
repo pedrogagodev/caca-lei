@@ -11,7 +11,7 @@ import {
   Lightning,
 } from "@phosphor-icons/react";
 import type { Icon } from "@phosphor-icons/react";
-import { saveBillReaction, removeBillReaction } from "@/app/actions/bills";
+import { saveBillReaction, removeBillReaction } from "@/app/actions/bill-reactions";
 import type { ReactionType as ReactionTypeDB } from "@/types/database.types";
 import { useAuth } from "@/contexts/auth-context";
 

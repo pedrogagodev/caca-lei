@@ -8,6 +8,7 @@ export interface Bill {
   location: string;
   author: string;
   summary: string | null;
+  didactic_summary: string | null;
   tags: string[];
   comments_count: number;
   supports_count: number;
@@ -40,6 +41,7 @@ export interface BillCommentReply {
   upvotes: number;
   created_at: string;
   author: Profile;
+  isUpvoted?: boolean;
 }
 
 export interface BillComment {
@@ -51,6 +53,7 @@ export interface BillComment {
   created_at: string;
   author: Profile;
   replies: BillCommentReply[];
+  isUpvoted?: boolean;
 }
 
 // Aggregated data types for the UI
