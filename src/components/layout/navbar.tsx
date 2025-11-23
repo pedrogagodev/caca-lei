@@ -37,7 +37,6 @@ import { toast } from "sonner";
 
 const navLinks = [
   { href: "/", label: "Início" },
-  { href: "/leis", label: "Leis" },
   { href: "/sobre", label: "Sobre" },
 ];
 
@@ -99,7 +98,9 @@ export function Navbar() {
 
       <header
         className={`sticky top-0 z-30 border-b transition-all duration-300 ${
-          isScrolled ? "bg-background/95 backdrop-blur-md" : "bg-background/85 backdrop-blur-md"
+          isScrolled
+            ? "bg-background/95 backdrop-blur-md"
+            : "bg-background/85 backdrop-blur-md"
         }`}
       >
         <nav className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 lg:px-6">
@@ -235,10 +236,7 @@ export function Navbar() {
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="w-[280px] sm:w-[320px]"
-            >
+            <SheetContent side="right" className="w-[280px] sm:w-[320px]">
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
@@ -276,7 +274,10 @@ export function Navbar() {
                       className="w-full cursor-pointer justify-start"
                       asChild
                     >
-                      <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Link
+                        href="/login"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         Entrar
                       </Link>
                     </Button>
@@ -285,7 +286,10 @@ export function Navbar() {
                       className="w-full cursor-pointer justify-start"
                       asChild
                     >
-                      <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Link
+                        href="/register"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
                         Criar conta
                       </Link>
                     </Button>
@@ -334,7 +338,10 @@ export function Navbar() {
       </header>
 
       {/* Command Palette for Search */}
-      <SearchCommandPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+      <SearchCommandPalette
+        open={isSearchOpen}
+        onOpenChange={setIsSearchOpen}
+      />
 
       <style jsx>{`
         @keyframes slideIn {
@@ -359,4 +366,3 @@ export function Navbar() {
     </>
   );
 }
-
