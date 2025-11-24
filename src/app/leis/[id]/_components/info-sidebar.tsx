@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "./status-badge";
 import { LawSummaryCard } from "./law-summary-card";
 import { LawDetailsAccordion } from "./law-details-accordion";
-import { QuickActions } from "./quick-actions";
 
 interface InfoSidebarProps {
   law: {
@@ -78,9 +77,6 @@ export function InfoSidebar({
           {law.code} · {law.location} · {law.author}
         </p>
       </div>
-
-      {/* Quick Actions */}
-      <QuickActions />
 
       {/* Summary Card */}
       <LawSummaryCard summary={summary} keyPoints={keyPoints} />

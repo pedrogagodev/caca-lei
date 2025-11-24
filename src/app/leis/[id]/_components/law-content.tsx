@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { StatusBadge } from "./status-badge";
 import { LawSummaryCard } from "./law-summary-card";
-import { QuickActions } from "./quick-actions";
 import { SocialProofMetrics } from "./social-proof-metrics";
 import { ReactionButtons } from "./reaction-buttons";
 import { CommentsSection } from "./comments-section";
@@ -155,8 +154,6 @@ export function LawContent({
       {/* 4. Engagement Buttons (Reactions) */}
       <ReactionButtons billId={law.id} initialCounts={reactionCounts} />
 
-      {/* 5. Quick Actions */}
-      <QuickActions />
 
       {/* 6. Summary Card */}
       <LawSummaryCard
