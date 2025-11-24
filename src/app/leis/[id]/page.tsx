@@ -8,7 +8,7 @@ import { generateSummaryFromText, generateDidacticSummaryFromText } from "@/lib/
 
 // Temporary video URL - replace with actual video source
 const videoSrc =
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4";
+  "https://hmddmhlntynbhsdilcij.supabase.co/storage/v1/object/public/bucket%20video/202511232226.mp4";
 
 interface LawDetailPageProps {
   params: Promise<{
